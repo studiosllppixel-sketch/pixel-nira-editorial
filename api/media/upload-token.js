@@ -1,38 +1,71 @@
-import { handleUploadPresigned } from '@vercel/blob/client';
-import { issueSignedToken } from '@vercel/blob';
+import { issueSignedToken, presignUrl } from '@vercel/blob';
 import { requireAdmin, sql } from '../_auth.js';
+
 const allowedBrands = new Set(['pixel-studios', 'nira-editorial', 'shared']);
 const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif']);
+const maxSize = 30 * 1024 * 1024;
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
-  if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ error: 'Method not allowed' }); }
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const admin = await requireAdmin(req).catch(() => null);
+  if (!admin) return res.status(401).json({ error: 'Sign in required.' });
+
   try {
-    const jsonResponse = await handleUploadPresigned({
-      body: req.body,
-      request: req,
-      getSignedToken: async (pathname, clientPayload) => {
-        const admin = await requireAdmin(req).catch(() => null);
-        if (!admin) throw new Error('Sign in required.');
-        let payload = {};
-        try { payload = JSON.parse(clientPayload || '{}'); } catch {}
-        const brand = payload.brand;
-        const contentType = payload.contentType;
-        const size = Number(payload.size);
-        if (!allowedBrands.has(brand) || !allowedTypes.has(contentType) || !Number.isFinite(size) || size < 1 || size > 30 * 1024 * 1024) throw new Error('Invalid media type, brand, or file size.');
-        const safeName = String(payload.filename || 'image').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 150);
-        const token = await issueSignedToken({ pathname, operations: ['put'], allowedContentTypes: [...allowedTypes], maximumSizeInBytes: 30 * 1024 * 1024, validUntil: Date.now() + 10 * 60 * 1000 });
-        return { token, urlOptions: { access: 'private', allowedContentTypes: [...allowedTypes], maximumSizeInBytes: 30 * 1024 * 1024, addRandomSuffix: false, validUntil: Date.now() + 10 * 60 * 1000, tokenPayload: JSON.stringify({ adminId: admin.id, brand, contentType, filename: safeName, size }) } };
-      },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
-        const payload = JSON.parse(tokenPayload || '{}');
-        const db = sql();
-        await db`INSERT INTO public.media_assets (brand, object_key, original_filename, content_type, size_bytes, created_by) VALUES (${payload.brand}, ${blob.pathname}, ${payload.filename || blob.pathname}, ${payload.contentType || blob.contentType || 'application/octet-stream'}, ${Number(payload.size) || 1}, ${payload.adminId}) ON CONFLICT (object_key) DO NOTHING`;
-        await db`INSERT INTO public.admin_audit_log (admin_user_id, action, target_type, target_id) VALUES (${payload.adminId}, 'media.upload', 'media', ${blob.pathname})`;
+    const body = req.body || {};
+    const action = body.action;
+    const brand = body.brand;
+    const contentType = body.contentType;
+    const size = Number(body.size);
+    const filename = String(body.filename || 'image').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 150);
+
+    if (!allowedBrands.has(brand) || !allowedTypes.has(contentType) || !Number.isFinite(size) || size < 1 || size > maxSize) {
+      return res.status(400).json({ error: 'Choose a supported image under 30 MB.' });
+    }
+
+    if (action === 'sign') {
+      const pathname = `media/${Date.now()}-${filename}`;
+      const validUntil = Date.now() + 10 * 60 * 1000;
+      const token = await issueSignedToken({
+        pathname,
+        operations: ['put'],
+        allowedContentTypes: [contentType],
+        maximumSizeInBytes: maxSize,
+        validUntil
+      });
+      const signed = await presignUrl(token, {
+        pathname,
+        operation: 'put',
+        access: 'private',
+        allowedContentTypes: [contentType],
+        maximumSizeInBytes: maxSize,
+        addRandomSuffix: false,
+        validUntil
+      });
+      return res.status(200).json({ pathname, presignedUrl: signed.presignedUrl });
+    }
+
+    if (action === 'register') {
+      const pathname = String(body.pathname || '');
+      if (!pathname.startsWith('media/') || pathname.length > 500 || pathname.includes('..')) {
+        return res.status(400).json({ error: 'Invalid media path.' });
       }
-    });
-    return res.status(200).json(jsonResponse);
+      const db = sql();
+      await db`INSERT INTO public.media_assets (brand, object_key, original_filename, content_type, size_bytes, created_by)
+        VALUES (${brand}, ${pathname}, ${String(body.originalFilename || filename).slice(0, 200)}, ${contentType}, ${size}, ${admin.id})
+        ON CONFLICT (object_key) DO NOTHING`;
+      await db`INSERT INTO public.admin_audit_log (admin_user_id, action, target_type, target_id)
+        VALUES (${admin.id}, 'media.upload', 'media', ${pathname})`;
+      return res.status(200).json({ ok: true, pathname });
+    }
+
+    return res.status(400).json({ error: 'Invalid upload action.' });
   } catch (error) {
     console.error('Media upload failed:', error?.message || 'unknown error');
-    return res.status(400).json({ error: 'Could not authorize this upload.' });
+    return res.status(400).json({ error: error?.message || 'Could not authorize this upload.' });
   }
 }
