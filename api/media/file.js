@@ -16,7 +16,9 @@ export default async function handler(req, res) {
     if (!result || result.statusCode !== 200) return res.status(404).json({ error: 'Media not found.' });
     res.setHeader('Content-Type', result.blob.contentType || 'application/octet-stream');
     res.setHeader('Content-Disposition', 'inline');
-    return result.stream.pipe(res);
+    const bytes = Buffer.from(await new Response(result.stream).arrayBuffer());
+    res.setHeader('Content-Length', String(bytes.length));
+    return res.status(200).send(bytes);
   } catch (error) {
     console.error('Media read failed:', error?.message || 'unknown error');
     return res.status(500).json({ error: 'Could not load media.' });
