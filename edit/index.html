@@ -187,4 +187,7 @@ $('preview-page').addEventListener('change',loadWebsiteSection);
 $('preview-section').addEventListener('change',loadWebsiteSection);
 
 
-</script></body></html>
+</script><style id="admin-auth-gate">body{visibility:hidden}</style><script>
+(async()=>{try{const r=await fetch('/api/admin/me',{credentials:'same-origin',cache:'no-store'});if(!r.ok){location.replace('/admin/');return;}document.body.style.visibility='visible';}catch(e){location.replace('/admin/');}})();
+</script>
+</body></html>
