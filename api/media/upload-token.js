@@ -1,4 +1,5 @@
-import { handleUpload } from '@vercel/blob/client';
+import { handleUploadPresigned } from '@vercel/blob/client';
+import { issueSignedToken } from '@vercel/blob';
 import { requireAdmin, sql } from '../_auth.js';
 const allowedBrands = new Set(['pixel-studios', 'nira-editorial', 'shared']);
 const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif']);
@@ -8,10 +9,10 @@ export default async function handler(req, res) {
   const admin = await requireAdmin(req).catch(() => null);
   if (!admin) return res.status(401).json({ error: 'Sign in required.' });
   try {
-    const jsonResponse = await handleUpload({
+    const jsonResponse = await handleUploadPresigned({
       body: req.body,
       request: req,
-      onBeforeGenerateToken: async (pathname, clientPayload) => {
+      getSignedToken: async (pathname, clientPayload) => {
         let payload = {};
         try { payload = JSON.parse(clientPayload || '{}'); } catch {}
         const brand = payload.brand;
@@ -19,7 +20,8 @@ export default async function handler(req, res) {
         const size = Number(payload.size);
         if (!allowedBrands.has(brand) || !allowedTypes.has(contentType) || !Number.isFinite(size) || size < 1 || size > 30 * 1024 * 1024) throw new Error('Invalid media type, brand, or file size.');
         const safeName = String(payload.filename || 'image').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 150);
-        return { allowedContentTypes: [...allowedTypes], maximumSizeInBytes: 30 * 1024 * 1024, addRandomSuffix: true, tokenPayload: JSON.stringify({ adminId: admin.id, brand, contentType, filename: safeName, size }) };
+        const token = await issueSignedToken({ pathname, operations: ['put'], allowedContentTypes: [...allowedTypes], maximumSizeInBytes: 30 * 1024 * 1024, validUntil: Date.now() + 10 * 60 * 1000 });
+        return { token, urlOptions: { access: 'private', allowedContentTypes: [...allowedTypes], maximumSizeInBytes: 30 * 1024 * 1024, addRandomSuffix: true, validUntil: Date.now() + 10 * 60 * 1000, tokenPayload: JSON.stringify({ adminId: admin.id, brand, contentType, filename: safeName, size }) } };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         const payload = JSON.parse(tokenPayload || '{}');
