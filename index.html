@@ -49,5 +49,21 @@
 <script>
 document.getElementById('signup').addEventListener('submit',function(e){e.preventDefault();document.getElementById('signup-status').textContent='Thank you for your interest. Newsletter sign-up will be connected soon.';this.reset();});
 </script>
+
+<script>
+(function(){
+try{
+ const all=JSON.parse(localStorage.getItem('nira-pixel-website-chrome')||'{}'),c=all.home;if(!c)return;
+ const h=document.querySelector('.masthead'),f=document.querySelector('footer');
+ if(h){h.style.minHeight=c.headerHeight+'px';h.style.paddingTop='8px';h.style.paddingBottom='8px';h.style.background=c.headerBg;h.style.color=c.headerColor;
+ const p=h.querySelector('.brand-logo');if(p){p.style.width=Math.max(60,c.logoWidth)+'px';p.style.height=Math.min(96,Math.max(44,c.headerHeight-20))+'px';}
+ const n=h.querySelector('.wordmark img');if(n){n.style.width=Math.max(60,c.logoWidth)+'px';n.style.height=Math.min(96,Math.max(44,c.headerHeight-20))+'px';}
+ h.querySelectorAll('a,.brand,.brand strong').forEach(x=>x.style.color=c.headerColor);
+ }
+ if(f){f.style.background=c.footerBg;f.style.color=c.footerColor;f.querySelectorAll('a,.footer-logo,.footer-bottom span').forEach(x=>x.style.color=c.footerColor);const first=f.querySelector('.footer-bottom span');if(first&&c.footerText)first.textContent=c.footerText;}
+}catch(e){}
+})();
+</script>
+
 </body>
 </html>
