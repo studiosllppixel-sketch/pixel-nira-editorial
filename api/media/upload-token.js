@@ -6,13 +6,13 @@ const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/av
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ error: 'Method not allowed' }); }
-  const admin = await requireAdmin(req).catch(() => null);
-  if (!admin) return res.status(401).json({ error: 'Sign in required.' });
   try {
     const jsonResponse = await handleUploadPresigned({
       body: req.body,
       request: req,
       getSignedToken: async (pathname, clientPayload) => {
+        const admin = await requireAdmin(req).catch(() => null);
+        if (!admin) throw new Error('Sign in required.');
         let payload = {};
         try { payload = JSON.parse(clientPayload || '{}'); } catch {}
         const brand = payload.brand;
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
         if (!allowedBrands.has(brand) || !allowedTypes.has(contentType) || !Number.isFinite(size) || size < 1 || size > 30 * 1024 * 1024) throw new Error('Invalid media type, brand, or file size.');
         const safeName = String(payload.filename || 'image').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 150);
         const token = await issueSignedToken({ pathname, operations: ['put'], allowedContentTypes: [...allowedTypes], maximumSizeInBytes: 30 * 1024 * 1024, validUntil: Date.now() + 10 * 60 * 1000 });
-        return { token, urlOptions: { access: 'private', allowedContentTypes: [...allowedTypes], maximumSizeInBytes: 30 * 1024 * 1024, addRandomSuffix: true, validUntil: Date.now() + 10 * 60 * 1000, tokenPayload: JSON.stringify({ adminId: admin.id, brand, contentType, filename: safeName, size }) } };
+        return { token, urlOptions: { access: 'private', allowedContentTypes: [...allowedTypes], maximumSizeInBytes: 30 * 1024 * 1024, addRandomSuffix: false, validUntil: Date.now() + 10 * 60 * 1000, tokenPayload: JSON.stringify({ adminId: admin.id, brand, contentType, filename: safeName, size }) } };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         const payload = JSON.parse(tokenPayload || '{}');
