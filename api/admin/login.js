@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   if (origin && host && new URL(origin).host !== host) return res.status(403).json({ error: 'Invalid request origin' });
   const { username, password } = req.body || {};
   if (typeof username !== 'string' || typeof password !== 'string' || username.length > 120 || password.length > 1024) return res.status(400).json({ error: 'Enter your username and password.' });
-  if (!process.env.ADMIN_USERNAME || !process.env.ADMIN_PASSWORD || !process.env.SESSION_SECRET) return res.status(503).json({ error: 'Admin login is not configured yet.' });
+  if (!process.env.ADMIN_USERNAME || !process.env.ADMIN_PASSWORD) return res.status(503).json({ error: 'Admin login is not configured yet.' });
   if (!safeEqual(username, process.env.ADMIN_USERNAME) || !safeEqual(password, process.env.ADMIN_PASSWORD)) {
     await new Promise(r => setTimeout(r, 350));
     return res.status(401).json({ error: 'Incorrect username or password.' });
