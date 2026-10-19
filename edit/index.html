@@ -195,12 +195,24 @@ function loadWebsiteSection(){
  frame.onload=()=>{
   try{
    const doc=frame.contentDocument;
+   // Bridge the current canvas draft into the real-page preview. This is a preview-only
+   // transformation; it does not change the public page until a separate publish workflow exists.
+   const hero=doc.querySelector('.hero');
+   if(hero){
+    const title=hero.querySelector('h1'),copy=hero.querySelector('p'),img=hero.querySelector('.hero-art img, img');
+    const canvasTitle=$('headline'),canvasCopy=$('subcopy'),canvasImage=$('photo');
+    if(title&&canvasTitle)title.innerHTML=canvasTitle.innerHTML;
+    if(copy&&canvasCopy)copy.textContent=canvasCopy.innerText;
+    if(img&&canvasImage&&canvasImage.src)img.src=canvasImage.src;
+    const kicker=hero.querySelector('.eyebrow');
+    if(kicker&&$('kicker'))kicker.textContent=$('kicker').textContent;
+   }
    const targets={header:doc.querySelector('header'),hero:doc.querySelector('.hero, .hero-section, main section:first-of-type'),stories:doc.querySelector('#stories, .stories, main section:nth-of-type(2), main'),footer:doc.querySelector('footer')};
    if(section!=='whole'){
     const target=targets[section];
     if(target){target.scrollIntoView({block:'start'});target.style.outline='2px solid #a34782';target.style.outlineOffset='-2px';}
    }else frame.contentWindow.scrollTo(0,0);
-  }catch(e){}
+  }catch(e){console.warn('Could not apply canvas draft to website preview',e);}
  };
  frame.src=page+(page.includes('?')?'&':'?')+'editorPreview=1&section='+encodeURIComponent(section)+'&t='+Date.now();
 }
