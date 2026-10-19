@@ -215,6 +215,8 @@ function renderWebsiteEditor(){
  $('website-edit-page').onchange=async()=>{$('preview-page').value=$('website-edit-page').value;websiteEdits=[];await loadWebsiteDraft();loadWebsiteSection();};
  $('website-apply').onclick=()=>applyWebsiteForm();
  $('website-save-draft').onclick=()=>saveWebsiteDraft();
+ const liveFields=['website-edit-text','website-edit-image','website-edit-color','website-edit-bg'];
+ liveFields.forEach(id=>$(id).addEventListener('input',()=>previewWebsiteFormLive()));
  loadWebsiteDraft();
  if(workView!=='website')showWebsitePreview();
 }
@@ -261,6 +263,13 @@ function attachWebsiteSelection(){
   websiteStatus('Selected '+selector+'. Edit the fields and tap Apply to live preview.');
  },true);
 }
+function previewWebsiteFormLive(){
+ const selector=$('website-edit-selector')?.value.trim();if(!selector)return;
+ const edit={selector,text:$('website-edit-text').value,color:$('website-edit-color').value,background:$('website-edit-bg').value,image:$('website-edit-image').value.trim()};
+ const idx=websiteEdits.findIndex(e=>e.selector===selector);if(idx>=0)websiteEdits[idx]=edit;else websiteEdits.push(edit);
+ applyEditToDocument($('website-preview-frame').contentDocument,edit);
+ websiteStatus('Live preview updated as you type. Tap Save website draft to keep these changes.');
+}
 function applyWebsiteForm(){
  const selector=$('website-edit-selector').value.trim();if(!selector){websiteStatus('Tap an element in the website preview first.');return}
  const edit={selector,text:$('website-edit-text').value,color:$('website-edit-color').value,background:$('website-edit-bg').value,image:$('website-edit-image').value.trim()};
@@ -300,7 +309,17 @@ function loadWebsiteSection(){
   try{
    const doc=frame.contentDocument;
    if(doc){
-    doc.querySelectorAll('[style*="outline: 2px solid rgb(163, 71, 130)"]').forEach(el=>el.style.outline=el.dataset.editorOldOutline||'');
+    doc.querySelectorAll('[data-editor-old-outline]').forEach(el=>el.style.outline=el.dataset.editorOldOutline||'');
+    // Mirror the current canvas draft into the matching brand's real website hero.
+    const canvasPage=brand==='nira'?'/nira-editorial/':'/pixel-studios/';
+    if(page===canvasPage){
+     const hero=doc.querySelector('.hero');
+     const title=hero?.querySelector('h1'),copy=hero?.querySelector('p'),img=hero?.querySelector('.hero-img img, img'),eyebrow=hero?.querySelector('.eyebrow');
+     if(title&&$('headline'))title.innerHTML=$('headline').innerHTML;
+     if(copy&&$('subcopy'))copy.textContent=$('subcopy').innerText;
+     if(img&&$('photo')?.src)img.src=$('photo').src;
+     if(eyebrow&&$('kicker'))eyebrow.textContent=$('kicker').textContent;
+    }
     websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));
     attachWebsiteSelection();
    }
