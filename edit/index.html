@@ -476,8 +476,13 @@ $('apply-canvas-home').addEventListener('click',async()=>{
 });
 // Simplified editor workflow: website first, advanced controls on demand.
 $('more-tools').addEventListener('click',()=>{const tools=$('advanced-tools');const open=tools.style.display==='none';tools.style.display=open?'block':'none';$('more-tools').textContent=open?'Hide design tools −':'More design tools +';});
-document.querySelectorAll('[data-workview]').forEach(b=>b.addEventListener('click',()=>document.body.classList.toggle('website-mode',b.dataset.workview==='website')));
-openPanel('websitecontent');document.body.classList.add('website-mode');
+document.querySelectorAll('[data-workview]').forEach(b=>b.addEventListener('click',()=>{
+ const isWebsite=b.dataset.workview==='website';
+ document.body.classList.toggle('website-mode',isWebsite);
+ if(isWebsite)showWebsitePreview();else showCanvasEditor();
+}));
+openPanel('websitecontent');
+showCanvasEditor();
 </script><style id="admin-auth-gate">body{visibility:hidden}</style><script>
 (async()=>{try{const r=await fetch('/api/admin/me',{credentials:'same-origin',cache:'no-store'});if(!r.ok){location.replace('/admin/');return;}document.body.style.visibility='visible';}catch(e){location.replace('/admin/');}})();
 </script>
