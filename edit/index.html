@@ -316,7 +316,7 @@ function applyEditToDocument(doc,edit){
  if(!doc||!edit?.selector)return;
  let el;try{el=doc.querySelector(edit.selector)}catch(e){return}
  if(!el)return;
- if(edit.text!==undefined&&edit.text!==null){if(el.matches('img,video,source')){}else el.textContent=edit.text;}
+ if(edit.text!==undefined&&edit.text!==null&&el.matches('h1,h2,h3,p,span,button')&&el.children.length===0&&!el.matches('img,video,source')){el.textContent=edit.text;}
  if(edit.color)el.style.color=edit.color;
  if(edit.background)el.style.backgroundColor=edit.background;
  if(edit.image){
@@ -345,7 +345,7 @@ function attachWebsiteSelection(){
   if(selectedWebsiteElement)selectedWebsiteElement.style.outline=selectedWebsiteElement.dataset.editorOldOutline||'';
   selectedWebsiteElement=el;el.dataset.editorOldOutline=el.style.outline||'';el.style.outline='2px solid #a34782';
   const selector=websiteSelector(el);$('website-edit-selector').value=selector;
-  $('website-edit-text').value=el.matches('img')?'':(el.innerText||el.textContent||'').trim();
+  $('website-edit-text').value=(el.matches('h1,h2,h3,p,span,button')&&el.children.length===0&&!el.matches('img'))?(el.innerText||el.textContent||'').trim():'';
   const selectedImg=el.matches('img')?el:el.querySelector('img');
   $('website-edit-image').value=selectedImg?.src||'';
   $('website-image-width').value=selectedImg&&selectedImg.style.width?parseFloat(selectedImg.style.width):100;
@@ -405,11 +405,13 @@ function loadWebsiteSection(){
    const doc=frame.contentDocument;
    if(doc){
     doc.querySelectorAll('[data-editor-old-outline]').forEach(el=>el.style.outline=el.dataset.editorOldOutline||'');
-    // Mirror the current canvas draft into the matching brand's real website hero.
-    const canvasPage=brand==='nira'?'/nira-editorial/':'/pixel-studios/';
-    if(page===canvasPage){
-     const hero=doc.querySelector('.hero');
-     const title=hero?.querySelector('h1'),copy=hero?.querySelector('p'),img=hero?.querySelector('.hero-img img, img'),eyebrow=hero?.querySelector('.eyebrow');
+    // Mirror canvas content into the selected page's hero without replacing its layout or styles.
+    const hero=doc.querySelector('.hero');
+    if(hero){
+     const title=hero.querySelector('h1');
+     const copy=hero.querySelector('.hero-copy p, p');
+     const img=hero.querySelector('.hero-art img, .hero-img img, img');
+     const eyebrow=hero.querySelector('.eyebrow');
      if(title&&$('headline'))title.innerHTML=$('headline').innerHTML;
      if(copy&&$('subcopy'))copy.textContent=$('subcopy').innerText;
      if(img&&$('photo')?.src)img.src=$('photo').src;
