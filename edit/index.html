@@ -3,7 +3,7 @@
 :root{--ink:#20151f;--plum:#70204f;--orchid:#c58ab5;--paper:#f8f4f6;--line:#e2d7e0;--muted:#827681;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',Arial,sans-serif}*{box-sizing:border-box}body{margin:0;font-family:var(--sans);background:#f1edf0;color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer}.top{height:64px;background:#171116;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:16px}.brand{font:500 22px var(--serif)}.brand em{font-family:Allura,cursive;color:#d5a5c9;font-size:29px}.status{font-size:11px;color:#d8c9d6}.top-actions{display:flex;gap:8px}.btn{border:1px solid #d8cbd6;border-radius:8px;padding:10px 13px;background:#fff;font-size:12px;font-weight:600}.btn.dark{background:#70204f;color:#fff;border-color:#70204f}.btn.ghost{background:transparent;border-color:#6a5666;color:#fff}.app{display:grid;grid-template-columns:235px minmax(350px,1fr) 270px;min-height:calc(100vh - 64px)}.sidebar{background:#fff;border-right:1px solid var(--line);padding:20px 15px}.side-title{font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin:5px 8px 12px}.brand-choice{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:25px}.brand-choice button{border:1px solid var(--line);background:#fff;padding:12px 5px;border-radius:9px;font-size:11px;font-weight:700}.brand-choice button.active{background:#f4e6f0;border-color:#9b4c80;color:#70204f}.navitem{display:flex;align-items:center;gap:10px;padding:11px 10px;border-radius:8px;font-size:12px;color:#625660;margin-bottom:3px}.navitem.active{background:#f4e6f0;color:#70204f;font-weight:700}.navitem span{width:19px;text-align:center}.side-panel{margin-top:14px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fcf9fb;font-size:11px;color:#625660}.side-panel button{width:100%;border:1px solid var(--line);border-radius:6px;background:#fff;padding:8px;margin:4px 0;text-align:left;font-size:11px}.side-panel p{line-height:1.6}.side-panel .panel-head{font-weight:700;color:#70204f;margin-bottom:8px}.hint{margin-top:16px;padding:12px;border-radius:10px;background:#f8f1f6;color:#746477;font-size:11px;line-height:1.65}.workspace{padding:20px;min-width:0}.workhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}.workhead h1{font:500 27px var(--serif);margin:0}.workhead p{font-size:11px;color:var(--muted);margin:4px 0 0}.devicebar{display:flex;gap:5px;background:#e5dfe4;border-radius:9px;padding:4px}.devicebar button{border:0;background:transparent;border-radius:6px;padding:8px 11px;font-size:11px}.devicebar button.active{background:#fff;box-shadow:0 1px 4px #00000010}.canvas-wrap{background:#e3dce2;border:1px solid #d4c9d3;border-radius:13px;padding:22px;min-height:620px;display:flex;align-items:center;justify-content:center;overflow:auto}.canvas{position:relative;width:min(100%,760px);aspect-ratio:16/10;background:#fbf6f8;box-shadow:0 10px 35px #2a17251c;overflow:hidden;transition:width .2s}.canvas.mobile{width:320px;aspect-ratio:9/16}.canvas.tablet{width:500px;aspect-ratio:3/4}.canvas .kicker{position:absolute;top:10%;left:7%;font-size:clamp(7px,1vw,10px);letter-spacing:.19em;text-transform:uppercase;color:#87366e}.canvas .headline{position:absolute;left:7%;top:24%;width:52%;font:500 clamp(28px,4.5vw,58px)/.98 var(--serif);letter-spacing:-.05em;color:#171116;outline:none;cursor:move;z-index:2}.canvas .headline em{color:#87366e}.canvas .subcopy{position:absolute;left:7%;top:61%;width:42%;font-size:clamp(8px,1.2vw,13px);line-height:1.65;color:#6d626b;cursor:move;z-index:2}.canvas .hero-photo{position:absolute;right:5%;top:12%;width:38%;height:76%;object-fit:cover;cursor:move;border:2px solid transparent}.canvas .hero-photo.selected,.canvas .headline.selected,.canvas .subcopy.selected{outline:2px solid #a34782;outline-offset:4px}.canvas .caption{position:absolute;right:5%;bottom:7%;font-size:8px;letter-spacing:.13em;text-transform:uppercase;background:#fbf6f8;padding:8px}.canvas.mobile .headline{top:24%;width:86%;font-size:42px}.canvas.mobile .hero-photo{top:48%;left:7%;right:auto;width:86%;height:39%}.canvas.mobile .subcopy{top:37%;width:80%;font-size:10px}.canvas.mobile .kicker{top:13%;font-size:8px}.canvas.mobile .caption{bottom:3%;right:7%}.canvas.tablet .headline{font-size:43px}.canvas.tablet .hero-photo{height:65%;top:18%}.canvas.tablet .subcopy{top:65%}.rightbar{background:#fff;border-left:1px solid var(--line);padding:20px 16px}.panel-title{font-size:14px;font-weight:700;margin:0 0 15px}.field{margin-bottom:17px}.field label{display:block;font-size:11px;font-weight:700;margin-bottom:7px}.field input[type=text],.field input[type=number],.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:7px;padding:10px;font-size:12px;background:#fff;color:var(--ink)}.field textarea{resize:vertical;min-height:75px}.field input[type=color]{width:100%;height:36px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:3px}.field input[type=range]{width:100%;accent-color:#70204f}.rowfields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.divider{height:1px;background:var(--line);margin:18px 0}.upload{display:block;border:1px dashed #bba7b8;border-radius:8px;padding:14px;text-align:center;font-size:11px;color:#70204f;background:#fbf7fa}.upload input{display:none}.notice{font-size:10px;color:var(--muted);line-height:1.6}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#21131d;color:#fff;padding:11px 16px;border-radius:8px;font-size:12px;display:none;box-shadow:0 8px 24px #0002;z-index:9}.toast.show{display:block}.hidden{display:none!important}@media(max-width:1000px){.app{grid-template-columns:190px minmax(300px,1fr)}.rightbar{grid-column:1/-1;border-left:0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.rightbar .panel-title,.rightbar .divider,.rightbar .notice{grid-column:1/-1}.canvas-wrap{min-height:480px}}@media(max-width:650px){.top{padding:0 12px;height:58px}.brand{font-size:18px}.status{display:none}.top-actions .btn{padding:9px;font-size:10px}.app{display:flex;flex-direction:column}.sidebar{border-right:0;border-bottom:1px solid var(--line);padding:12px}.sidebar .side-title:not(:first-child),.sidebar .navitem{display:flex}.sidebar .side-title:not(:first-child){display:none}.sidebar .hint{display:none}.sidebar .navitem{padding:8px;font-size:11px}.side-panel{display:none}.sidebar .navitem.active{display:flex}.brand-choice{margin:0;max-width:330px}.workspace{padding:13px}.workhead h1{font-size:23px}.canvas-wrap{padding:12px;min-height:420px}.canvas{width:100%}.canvas .headline{font-size:clamp(25px,8vw,40px)}.rightbar{display:block;padding:16px}.rightbar .field{margin-bottom:13px}.canvas.mobile{width:280px}.canvas.tablet{width:100%;max-width:420px}}
 .website-control{display:grid;gap:8px;margin-top:10px}.website-control label{display:grid;gap:4px;font-size:10px;font-weight:700;color:#625660}.website-control input,.website-control select{width:100%;min-width:0;border:1px solid var(--line);border-radius:6px;padding:8px;background:#fff;font-size:11px;color:var(--ink)}.website-control .fieldrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.website-control .btn{width:100%;text-align:center}.website-note{font-size:10px;line-height:1.5;color:#827681}</style></head><body>
 <header class="top"><div class="brand">NIRA <em>×</em> PIXEL <span style="font:10px var(--sans);letter-spacing:.14em;color:#cbb9c6">EDITOR</span></div><div class="status">DESIGN WORKSPACE · PREVIEW MODE</div><div class="top-actions"><button class="btn ghost" id="reset">Reset</button><button class="btn" id="save">Save draft</button><button class="btn dark" id="preview">Preview</button></div></header>
-<div class="app"><aside class="sidebar"><div class="side-title">Choose brand</div><div class="brand-choice"><button class="active" data-brand="nira">NIRA Editorial</button><button data-brand="pixel">PIXEL Studios</button></div><div class="side-title">Workspace</div><div class="navitem active" data-panel="canvas"><span>▧</span> Canvas editor</div><div class="navitem" data-panel="layers"><span>▤</span> Layers & elements</div><div class="navitem" data-panel="media"><span>▣</span> Media library</div><div class="navitem" data-panel="type"><span>Aa</span> Typography</div><div class="navitem" data-panel="colors"><span>◈</span> Brand colours</div><div class="navitem" data-panel="canvases"><span>▧</span> Multiple canvases</div><div class="navitem" data-panel="hero"><span>✦</span> Hero section</div><div class="navitem" data-panel="headerfooter"><span>↕</span> Website header & footer</div><div id="side-panel" class="side-panel"></div><div class="hint"><strong>Preview workspace</strong><br>Try the canvas controls, add text or upload a photo. Drafts are saved in this browser only until the secure backend is connected.</div></aside>
+<div class="app"><aside class="sidebar"><div class="side-title">Choose brand</div><div class="brand-choice"><button class="active" data-brand="nira">NIRA Editorial</button><button data-brand="pixel">PIXEL Studios</button></div><div class="side-title">Workspace</div><div class="navitem active" data-panel="canvas"><span>▧</span> Canvas editor</div><div class="navitem" data-panel="layers"><span>▤</span> Layers & elements</div><div class="navitem" data-panel="media"><span>▣</span> Media library</div><div class="navitem" data-panel="type"><span>Aa</span> Typography</div><div class="navitem" data-panel="colors"><span>◈</span> Brand colours</div><div class="navitem" data-panel="canvases"><span>▧</span> Multiple canvases</div><div class="navitem" data-panel="hero"><span>✦</span> Hero section</div><div class="navitem" data-panel="headerfooter"><span>↕</span> Website header & footer</div><div class="navitem" data-panel="websitecontent"><span>✎</span> Full website editor</div><div id="side-panel" class="side-panel"></div><div class="hint"><strong>Preview workspace</strong><br>Try the canvas controls, add text or upload a photo. Drafts are saved in this browser only until the secure backend is connected.</div></aside>
 <main class="workspace"><div class="workhead"><div><h1 id="page-title">Nira Editorial · Cover canvas</h1><p id="workspace-help">Select an element on the canvas to adjust its content and style.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><div class="devicebar"><button class="active" data-workview="canvas">Canvas editor</button><button data-workview="website">Website preview</button></div><div class="devicebar" id="devicebar"><button class="active" data-device="desktop">Desktop</button><button data-device="tablet">Tablet</button><button data-device="mobile">Mobile</button></div></div></div><div id="website-preview-controls" style="display:none;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><label style="font-size:11px">Website <select id="preview-page" class="btn"><option value="/">Main homepage</option><option value="/pixel-studios/">Pixel Studios</option><option value="/nira-editorial/">Nira Editorial</option></select></label><label style="font-size:11px">Section <select id="preview-section" class="btn"><option value="whole">Whole page</option><option value="header">Header</option><option value="hero">Hero section</option><option value="stories">Featured stories / content</option><option value="footer">Footer</option></select></label><button class="btn dark" id="show-section">Show selected section</button></div><div id="website-preview-wrap" style="display:none;background:#e3dce2;border:1px solid #d4c9d3;border-radius:13px;padding:10px;min-height:620px"><iframe id="website-preview-frame" title="Actual website section preview" style="width:100%;height:78vh;min-height:560px;border:0;border-radius:8px;background:white"></iframe></div><div class="canvas-wrap" id="canvas-wrap"><div class="canvas" id="canvas"><div class="kicker" id="kicker">FASHION · CULTURE · PERSPECTIVE</div><div class="headline selected" id="headline" contenteditable="true" spellcheck="false">Look closer.<br><em>Feel more.</em></div><div class="subcopy" id="subcopy" contenteditable="true" spellcheck="false">A considered point of view on fashion, identity and the art of seeing things differently.</div><img class="hero-photo" id="photo" alt="Your editorial image" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=85"><div class="caption" id="caption">The current edit · No. 01</div></div></div><div id="canvas-actions" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:13px"><button class="btn" id="addtext">＋ Add text</button><label class="btn" for="image-upload">＋ Add image</label><button class="btn" id="addcanvas">＋ New canvas</button><button class="btn" id="duplicatecanvas">Duplicate canvas</button><input class="hidden" id="image-upload" type="file" accept="image/*"><button class="btn" id="delete">Delete selected</button><span class="notice" id="selection-note">Selected: Headline</span></div></main>
 <aside class="rightbar"><h2 class="panel-title">Element settings</h2><div class="field"><label for="text-content">Text content</label><textarea id="text-content">Look closer.\nFeel more.</textarea></div><div class="rowfields"><div class="field"><label for="font-size">Font size</label><input id="font-size" type="range" min="10" max="100" value="58"></div><div class="field"><label for="text-color">Text colour</label><input id="text-color" type="color" value="#171116"></div></div><div class="field"><label for="font-family">Typeface</label><select id="font-family"><option value="serif">Editorial serif</option><option value="sans">Modern sans</option><option value="script">Signature script</option></select></div><div class="divider"></div><div class="field"><label for="canvas-color">Canvas background</label><input id="canvas-color" type="color" value="#fbf6f8"></div><div class="rowfields"><div class="field"><label for="image-width">Image width</label><input id="image-width" type="range" min="15" max="85" value="38"></div><div class="field"><label for="image-scale">Image scale</label><input id="image-scale" type="range" min="100" max="180" value="100"></div></div><div class="field"><label for="layer-order">Layer order</label><div style="display:flex;gap:6px"><button class="btn" id="layer-up" type="button">Bring forward ↑</button><button class="btn" id="layer-down" type="button">Send backward ↓</button></div></div><div class="field"><label><input type="checkbox" id="lock-element"> Lock selected element position</label></div><div class="field"><label for="caption-content">Image caption</label><input id="caption-content" type="text" value="The current edit · No. 01"></div><div class="field"><label class="upload" for="image-upload">Upload an image from your device<br><span class="notice">Image stays in this browser preview</span></label></div><p class="notice">This is the first interactive editor prototype. Login protection, cloud media storage, shared drafts and publishing will be connected in the backend phase. Do not use this preview for confidential content.</p></aside></div><div class="toast" id="toast" role="status"></div>
 <script>
@@ -38,6 +38,7 @@ function openPanel(name){
  const box=$('side-panel');
  if(name==='canvas'){box.innerHTML='';box.style.display='none';toast('Canvas editor selected.');return;}
  box.style.display='block';
+ if(name==='websitecontent'){renderWebsiteEditor();return;}
  if(name==='layers'){
   box.innerHTML='<div class="panel-head">Layers & elements</div>';
   [['headline','Headline text'],['subcopy','Body copy'],['photo','Main image'],['caption','Image caption'],['kicker','Section label']].forEach(([id,label])=>{const b=document.createElement('button');b.textContent='◉  '+label;b.onclick=()=>{selectEl(id);toast(label+' selected on canvas.')};box.appendChild(b)});
@@ -190,29 +191,122 @@ function showCanvasEditor(){
  $('canvas-wrap').style.display='flex';$('canvas-actions').style.display='flex';$('website-preview-wrap').style.display='none';$('website-preview-controls').style.display='none';$('devicebar').style.display='flex';
  $('page-title').textContent=canvasPages[activePage]?.title||'Canvas editor';$('workspace-help').textContent='Select an element on the canvas to adjust its content and style.';
 }
+let websiteEdits=[];
+let selectedWebsiteElement=null;
+function pageKeyForPath(path){return path==='/pixel-studios/'?'pixel-studios':path==='/nira-editorial/'?'nira-editorial':'home';}
+function websiteSelector(el){
+ if(!el||!el.tagName)return '';
+ if(el.id)return '#'+CSS.escape(el.id);
+ const parts=[];let node=el;
+ while(node&&node.nodeType===1&&node.tagName.toLowerCase()!=='html'){
+  let part=node.tagName.toLowerCase();
+  if(node.classList&&node.classList.length)part+='.'+Array.from(node.classList).filter(c=>/^[a-zA-Z_-][\\w-]*$/.test(c)).slice(0,2).join('.');
+  const parent=node.parentElement;
+  if(parent){const siblings=Array.from(parent.children).filter(x=>x.tagName===node.tagName);if(siblings.length>1)part+=':nth-of-type('+(siblings.indexOf(node)+1)+')';}
+  parts.unshift(part);node=parent;
+  if(parts.length>=4)break;
+ }
+ return parts.join(' > ');
+}
+function renderWebsiteEditor(){
+ const box=$('side-panel');
+ box.innerHTML='<div class="panel-head">Full website editor</div><p>Tap any text, image or section in the live page to select it. Changes appear in the preview immediately and can be saved as a private draft.</p><label style="display:block;margin:12px 0 5px;font-size:11px">Website page</label><select id="website-edit-page" class="btn" style="width:100%"><option value="/">Main homepage</option><option value="/pixel-studios/">Pixel Studios</option><option value="/nira-editorial/">Nira Editorial</option></select><label style="display:block;margin:12px 0 5px;font-size:11px">Selected element selector</label><input id="website-edit-selector" class="btn" style="width:100%;text-align:left" placeholder="Tap an element in the preview"><label style="display:block;margin:12px 0 5px;font-size:11px">Text / heading</label><textarea id="website-edit-text" class="btn" style="width:100%;min-height:90px;text-align:left" placeholder="Select an element to edit its text"></textarea><label style="display:block;margin:12px 0 5px;font-size:11px">Image URL (for images)</label><input id="website-edit-image" class="btn" style="width:100%;text-align:left" placeholder="https://…"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><label style="font-size:11px">Text colour<input id="website-edit-color" type="color" value="#171116" style="display:block;width:100%;height:38px;border:0;background:transparent"></label><label style="font-size:11px">Background<input id="website-edit-bg" type="color" value="#fbf6f8" style="display:block;width:100%;height:38px;border:0;background:transparent"></label></div><button class="btn dark" id="website-apply" style="width:100%;margin-top:14px">Apply to live preview</button><button class="btn" id="website-save-draft" style="width:100%;margin-top:8px">Save website draft</button><p id="website-editor-status" style="font-size:11px;line-height:1.5;color:var(--muted)">Drafts save to the preview database only. Nothing is published to the live website.</p>';
+ $('website-edit-page').value=$('preview-page').value;
+ $('website-edit-page').onchange=async()=>{$('preview-page').value=$('website-edit-page').value;websiteEdits=[];await loadWebsiteDraft();loadWebsiteSection();};
+ $('website-apply').onclick=()=>applyWebsiteForm();
+ $('website-save-draft').onclick=()=>saveWebsiteDraft();
+ loadWebsiteDraft();
+ if(workView!=='website')showWebsitePreview();
+}
+function websiteStatus(message){const el=$('website-editor-status');if(el)el.textContent=message;}
+async function loadWebsiteDraft(){
+ try{
+  const key=pageKeyForPath($('website-edit-page')?.value||$('preview-page').value);
+  const r=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});
+  const data=await r.json();if(!r.ok)throw new Error(data.error||'Could not load website draft');
+  const page=(data.pages||data).find?.(p=>p.page_key===key||p.pageKey===key)||null;
+  const content=page?.draft_content||page?.draftContent||page?.published_content||page?.publishedContent||{};
+  websiteEdits=Array.isArray(content.websiteEdits)?content.websiteEdits.slice():[];
+  websiteStatus('Loaded '+websiteEdits.length+' saved website edit(s). Select an element in the preview to edit it.');
+ }catch(e){console.warn(e);websiteEdits=[];websiteStatus('Could not load saved edits. You can still preview changes; sign in again if saving fails.');}
+}
+function applyEditToDocument(doc,edit){
+ if(!doc||!edit?.selector)return;
+ let el;try{el=doc.querySelector(edit.selector)}catch(e){return}
+ if(!el)return;
+ if(edit.text!==undefined&&edit.text!==null){if(el.matches('img,video,source')){}else el.textContent=edit.text;}
+ if(edit.color)el.style.color=edit.color;
+ if(edit.background)el.style.backgroundColor=edit.background;
+ if(edit.image){if(el.matches('img'))el.src=edit.image;else{const img=el.querySelector('img');if(img)img.src=edit.image;else el.style.backgroundImage='url("'+edit.image.replace(/["\\\\]/g,'')+'")';}}
+}
+function applyWebsiteEditsToFrame(){
+ const frame=$('website-preview-frame');try{const doc=frame.contentDocument;if(!doc)return;websiteEdits.forEach(e=>applyEditToDocument(doc,e));attachWebsiteSelection();}catch(e){console.warn(e)}
+}
+function attachWebsiteSelection(){
+ const doc=$('website-preview-frame').contentDocument;if(!doc||doc.documentElement.dataset.editorBound==='1')return;
+ doc.documentElement.dataset.editorBound='1';
+ doc.addEventListener('click',ev=>{
+  const el=ev.target.closest('h1,h2,h3,p,span,a,button,img,section,header,footer,article,figure');
+  if(!el)return;
+  ev.preventDefault();ev.stopPropagation();
+  if(selectedWebsiteElement)selectedWebsiteElement.style.outline=selectedWebsiteElement.dataset.editorOldOutline||'';
+  selectedWebsiteElement=el;el.dataset.editorOldOutline=el.style.outline||'';el.style.outline='2px solid #a34782';
+  const selector=websiteSelector(el);$('website-edit-selector').value=selector;
+  $('website-edit-text').value=el.matches('img')?'':(el.innerText||el.textContent||'').trim();
+  $('website-edit-image').value=el.matches('img')?el.src:(el.querySelector('img')?.src||'');
+  const c=getComputedStyle(el).color.match(/\\d+/g),bg=getComputedStyle(el).backgroundColor.match(/\\d+/g);
+  if(c&&c.length>=3)$('website-edit-color').value='#'+c.slice(0,3).map(v=>Number(v).toString(16).padStart(2,'0')).join('');
+  if(bg&&bg.length>=3&&Number(bg[3]||1)>0)$('website-edit-bg').value='#'+bg.slice(0,3).map(v=>Number(v).toString(16).padStart(2,'0')).join('');
+  websiteStatus('Selected '+selector+'. Edit the fields and tap Apply to live preview.');
+ },true);
+}
+function applyWebsiteForm(){
+ const selector=$('website-edit-selector').value.trim();if(!selector){websiteStatus('Tap an element in the website preview first.');return}
+ const edit={selector,text:$('website-edit-text').value,color:$('website-edit-color').value,background:$('website-edit-bg').value,image:$('website-edit-image').value.trim()};
+ const idx=websiteEdits.findIndex(e=>e.selector===selector);if(idx>=0)websiteEdits[idx]=edit;else websiteEdits.push(edit);
+ applyEditToDocument($('website-preview-frame').contentDocument,edit);
+ websiteStatus('Applied to preview. Tap Save website draft to keep it on the preview database.');
+}
+async function saveWebsiteDraft(){
+ try{
+  const key=pageKeyForPath($('website-edit-page')?.value||$('preview-page').value);
+  const get=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});
+  const list=await get.json();if(!get.ok)throw new Error(list.error||'Could not load page data');
+  const pages=list.pages||list;const page=pages.find?.(p=>p.page_key===key||p.pageKey===key)||{};
+  const content=page.draft_content||page.draftContent||page.published_content||page.publishedContent||{};
+  content.websiteEdits=websiteEdits;
+  const r=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey:key,title:page.title||key,content,action:'draft'})});
+  const result=await r.json().catch(()=>({}));if(!r.ok)throw new Error(result.error||'Server draft save failed');
+  websiteStatus('Website draft saved securely to preview. The public website has not been published.');
+ }catch(e){console.error(e);websiteStatus('Save failed: '+e.message);}
+}
+function showWebsitePreview(){
+ workView='website';
+ document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
+ $('canvas-wrap').style.display='none';$('canvas-actions').style.display='none';$('website-preview-wrap').style.display='block';$('website-preview-controls').style.display='flex';$('devicebar').style.display='none';
+ $('page-title').textContent='Full website live editor';$('workspace-help').textContent='Select any text, image or section in the real website preview, edit it in the left panel, then save a draft.';
+ loadWebsiteSection();
+}
+function showCanvasEditor(){
+ workView='canvas';
+ document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
+ $('canvas-wrap').style.display='flex';$('canvas-actions').style.display='flex';$('website-preview-wrap').style.display='none';$('website-preview-controls').style.display='none';$('devicebar').style.display='flex';
+ $('page-title').textContent=canvasPages[activePage]?.title||'Canvas editor';$('workspace-help').textContent='Select an element on the canvas to adjust its content and style.';
+}
 function loadWebsiteSection(){
  const frame=$('website-preview-frame'),page=$('preview-page').value,section=$('preview-section').value;
  frame.onload=()=>{
   try{
    const doc=frame.contentDocument;
-   // Bridge the current canvas draft into the real-page preview. This is a preview-only
-   // transformation; it does not change the public page until a separate publish workflow exists.
-   const hero=doc.querySelector('.hero');
-   if(hero){
-    const title=hero.querySelector('h1'),copy=hero.querySelector('p'),img=hero.querySelector('.hero-art img, img');
-    const canvasTitle=$('headline'),canvasCopy=$('subcopy'),canvasImage=$('photo');
-    if(title&&canvasTitle)title.innerHTML=canvasTitle.innerHTML;
-    if(copy&&canvasCopy)copy.textContent=canvasCopy.innerText;
-    if(img&&canvasImage&&canvasImage.src)img.src=canvasImage.src;
-    const kicker=hero.querySelector('.eyebrow');
-    if(kicker&&$('kicker'))kicker.textContent=$('kicker').textContent;
+   if(doc){
+    doc.querySelectorAll('[style*="outline: 2px solid rgb(163, 71, 130)"]').forEach(el=>el.style.outline=el.dataset.editorOldOutline||'');
+    websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));
+    attachWebsiteSelection();
    }
    const targets={header:doc.querySelector('header'),hero:doc.querySelector('.hero, .hero-section, main section:first-of-type'),stories:doc.querySelector('#stories, .stories, main section:nth-of-type(2), main'),footer:doc.querySelector('footer')};
-   if(section!=='whole'){
-    const target=targets[section];
-    if(target){target.scrollIntoView({block:'start'});target.style.outline='2px solid #a34782';target.style.outlineOffset='-2px';}
-   }else frame.contentWindow.scrollTo(0,0);
-  }catch(e){console.warn('Could not apply canvas draft to website preview',e);}
+   if(section!=='whole'){const target=targets[section];if(target){target.scrollIntoView({block:'start'});target.style.outline='2px solid #a34782';target.style.outlineOffset='-2px';}}
+   else frame.contentWindow.scrollTo(0,0);
+  }catch(e){console.warn('Could not apply website draft to preview',e);}
  };
  frame.src=page+(page.includes('?')?'&':'?')+'editorPreview=1&section='+encodeURIComponent(section)+'&t='+Date.now();
 }
