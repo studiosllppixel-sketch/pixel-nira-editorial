@@ -255,10 +255,14 @@ function websiteSelector(el){
 }
 function renderWebsiteEditor(){
  const box=$('side-panel');
- box.innerHTML='<div class="panel-head">Full website editor</div><p>Tap any text, image or section in the live page to select it. Changes appear in the preview immediately and can be saved as a private draft.</p><label style="display:block;margin:12px 0 5px;font-size:11px">Website page</label><select id="website-edit-page" class="btn" style="width:100%"><option value="/">Main homepage</option><option value="/pixel-studios/">Pixel Studios</option><option value="/nira-editorial/">Nira Editorial</option></select><label style="display:block;margin:12px 0 5px;font-size:11px">Selected element selector</label><input id="website-edit-selector" class="btn" style="width:100%;text-align:left" placeholder="Tap an element in the preview"><label style="display:block;margin:12px 0 5px;font-size:11px">Text / heading</label><textarea id="website-edit-text" class="btn" style="width:100%;min-height:90px;text-align:left" placeholder="Select an element to edit its text"></textarea><label style="display:block;margin:12px 0 5px;font-size:11px">Image URL (for images)</label><input id="website-edit-image" class="btn" style="width:100%;text-align:left" placeholder="https://…"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><label style="font-size:11px">Text colour<input id="website-edit-color" type="color" value="#171116" style="display:block;width:100%;height:38px;border:0;background:transparent"></label><label style="font-size:11px">Background<input id="website-edit-bg" type="color" value="#fbf6f8" style="display:block;width:100%;height:38px;border:0;background:transparent"></label></div><button class="btn dark" id="website-apply" style="width:100%;margin-top:14px">Apply to live preview</button><button class="btn" id="website-save-draft" style="width:100%;margin-top:8px">Save website draft</button><p id="website-editor-status" style="font-size:11px;line-height:1.5;color:var(--muted)">Drafts save to the preview database only. Nothing is published to the live website.</p>';
+ box.innerHTML='<div class="panel-head">Full website editor</div><p>Tap any text, image or section in the live page to select it. Changes appear in the preview immediately and can be saved as a private draft.</p><label style="display:block;margin:12px 0 5px;font-size:11px">Website page</label><select id="website-edit-page" class="btn" style="width:100%"><option value="/">Main homepage</option><option value="/pixel-studios/">Pixel Studios</option><option value="/nira-editorial/">Nira Editorial</option></select><label style="display:block;margin:12px 0 5px;font-size:11px">Selected element selector</label><input id="website-edit-selector" class="btn" style="width:100%;text-align:left" placeholder="Tap an element in the preview"><label style="display:block;margin:12px 0 5px;font-size:11px">Text / heading</label><textarea id="website-edit-text" class="btn" style="width:100%;min-height:90px;text-align:left" placeholder="Select an element to edit its text"></textarea><label style="display:block;margin:12px 0 5px;font-size:11px">Image</label><input id="website-edit-image" class="btn" style="width:100%;text-align:left" placeholder="Choose an uploaded image" readonly><button class="btn" type="button" id="website-choose-media" style="width:100%;margin-top:7px">▣ Choose from Media Library</button><div id="website-media-picker" style="display:none;margin-top:9px;border:1px solid var(--line);border-radius:8px;padding:8px;background:#fcf9fb"><div style="display:flex;gap:6px;margin-bottom:8px"><select id="website-media-brand" class="btn" style="min-width:0;flex:1"><option value="current">Selected brand</option><option value="nira-editorial">Nira Editorial</option><option value="pixel-studios">Pixel Studios</option><option value="shared">Shared</option><option value="all">All brands</option></select><button id="website-media-refresh" class="btn" type="button">↻</button></div><input id="website-media-search" class="btn" type="search" placeholder="Search uploaded images…" style="width:100%;text-align:left;margin-bottom:8px"><div id="website-media-count" style="font-size:10px;color:var(--muted);margin-bottom:7px">Open the library to browse images.</div><div id="website-media-items" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:260px;overflow:auto"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><label style="font-size:11px">Text colour<input id="website-edit-color" type="color" value="#171116" style="display:block;width:100%;height:38px;border:0;background:transparent"></label><label style="font-size:11px">Background<input id="website-edit-bg" type="color" value="#fbf6f8" style="display:block;width:100%;height:38px;border:0;background:transparent"></label></div><button class="btn dark" id="website-apply" style="width:100%;margin-top:14px">Apply to live preview</button><button class="btn" id="website-save-draft" style="width:100%;margin-top:8px">Save website draft</button><p id="website-editor-status" style="font-size:11px;line-height:1.5;color:var(--muted)">Drafts save to the preview database only. Nothing is published to the live website.</p>';
  $('website-edit-page').value=$('preview-page').value;
  $('website-edit-page').onchange=async()=>{$('preview-page').value=$('website-edit-page').value;websiteEdits=[];await loadWebsiteDraft();loadWebsiteSection();};
  $('website-apply').onclick=()=>applyWebsiteForm();
+ $('website-choose-media').onclick=()=>{const picker=$('website-media-picker');picker.style.display=picker.style.display==='none'?'block':'none';if(picker.style.display==='block')loadWebsiteMediaLibrary();};
+ $('website-media-refresh').onclick=loadWebsiteMediaLibrary;
+ $('website-media-brand').onchange=loadWebsiteMediaLibrary;
+ $('website-media-search').oninput=filterWebsiteMediaLibrary;
  $('website-save-draft').onclick=()=>saveWebsiteDraft();
  const liveFields=['website-edit-text','website-edit-image','website-edit-color','website-edit-bg'];
  liveFields.forEach(id=>$(id).addEventListener('input',()=>previewWebsiteFormLive()));
@@ -266,6 +270,35 @@ function renderWebsiteEditor(){
  if(workView!=='website')showWebsitePreview();
 }
 function websiteStatus(message){const el=$('website-editor-status');if(el)el.textContent=message;}
+let websiteMediaAssets=[];
+async function loadWebsiteMediaLibrary(){
+ const list=$('website-media-items'),count=$('website-media-count');if(!list||!count)return;
+ list.innerHTML='<p style="grid-column:1/-1;font-size:11px">Loading your Media Library…</p>';count.textContent='Loading images…';
+ try{
+  const filter=$('website-media-brand')?.value||'current';
+  const key=filter==='current'?(brand==='nira'?'nira-editorial':'pixel-studios'):filter;
+  const response=await fetch('/api/media/list'+(key&&key!=='all'?'?brand='+encodeURIComponent(key):''),{credentials:'same-origin',cache:'no-store'});
+  const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not load Media Library');
+  websiteMediaAssets=result.assets||[];filterWebsiteMediaLibrary();
+ }catch(error){list.innerHTML='<p style="grid-column:1/-1;font-size:11px">Could not load images. Please sign in again or refresh.</p>';count.textContent=error.message||'Media Library unavailable';}
+}
+function filterWebsiteMediaLibrary(){
+ const list=$('website-media-items'),count=$('website-media-count');if(!list||!count)return;
+ const q=($('website-media-search')?.value||'').trim().toLowerCase();
+ const items=websiteMediaAssets.filter(a=>String(a.original_filename||a.object_key||'').toLowerCase().includes(q));
+ list.innerHTML='';count.textContent=items.length+' image'+(items.length===1?'':'s')+' available';
+ if(!items.length){list.innerHTML='<p style="grid-column:1/-1;font-size:11px">No images found for this filter.</p>';return;}
+ items.forEach(asset=>{
+  const url='/api/media/file?pathname='+encodeURIComponent(asset.object_key);
+  const card=document.createElement('button');card.type='button';card.className='btn';card.style.cssText='min-width:0;padding:4px;border-radius:7px;text-align:left;overflow:hidden';
+  const img=document.createElement('img');img.src=url;img.alt=asset.original_filename||'Uploaded image';img.loading='lazy';img.style.cssText='display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:4px;background:#eee';
+  const name=document.createElement('span');name.textContent=asset.original_filename||asset.object_key;name.style.cssText='display:block;font-size:9px;line-height:1.3;margin-top:5px;overflow-wrap:anywhere';
+  const brandLabel=document.createElement('span');brandLabel.textContent=asset.brand||'Shared';brandLabel.style.cssText='display:block;font-size:9px;color:var(--muted);margin-top:3px';
+  card.append(img,name,brandLabel);card.onclick=()=>{ $('website-edit-image').value=url; $('website-media-picker').style.display='none'; previewWebsiteFormLive(); websiteStatus('Media Library image selected. Save website draft to keep this change.'); };
+  list.appendChild(card);
+ });
+}
+
 async function loadWebsiteDraft(){
  try{
   const key=pageKeyForPath($('website-edit-page')?.value||$('preview-page').value);
