@@ -24,7 +24,7 @@ $('canvas-color').addEventListener('input',()=> $('canvas').style.background=$('
 $('image-width').addEventListener('input',()=>{$('photo').style.width=$('image-width').value+'%';$('photo').style.height='76%'});
 $('image-scale').addEventListener('input',()=>{$('photo').style.objectFit='cover';$('photo').style.transform='scale('+(Number($('image-scale').value)/100)+')';$('photo').style.transformOrigin='center'});
 $('caption-content').addEventListener('input',()=> $('caption').textContent=$('caption-content').value);
-$('image-upload').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(!file.type.startsWith('image/'))return toast('Please choose an image file.');if(file.size>30*1024*1024)return toast('Please choose an image under 30 MB.');toast('Uploading image to your secure Media Library…');try{const safeName=String(file.name||'image').replace(/[^a-zA-Z0-9._-]/g,'_').slice(0,150);const media={brand:brand==='nira'?'nira-editorial':'pixel-studios',contentType:file.type,size:file.size,filename:file.name};const signResponse=await fetch('/api/media/upload-token',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({...media,action:'sign'})});const signed=await signResponse.json().catch(()=>({}));if(!signResponse.ok)throw new Error(signed.error||'Could not prepare secure upload');const putResponse=await fetch(signed.presignedUrl,{method:'PUT',headers:{'Content-Type':file.type},body:file});if(!putResponse.ok)throw new Error('Private storage upload failed ('+putResponse.status+')');const registerResponse=await fetch('/api/media/upload-token',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({...media,action:'register',pathname:signed.pathname,originalFilename:file.name})});const registered=await registerResponse.json().catch(()=>({}));if(!registerResponse.ok)throw new Error(registered.error||'Image uploaded but could not be added to Media Library');const blob={pathname:signed.pathname};const imageUrl='/api/media/file?pathname='+encodeURIComponent(blob.pathname);if(selected==='photo'){$('photo').src=imageUrl;selectEl('photo');}else{const img=document.createElement('img');img.src=imageUrl;img.alt=file.name;img.id='added-image-'+Date.now();img.style.cssText='position:absolute;left:52%;top:12%;width:28%;height:42%;object-fit:cover;cursor:move;z-index:4';$('canvas').appendChild(img);els[img.id]=img;bindElement(img.id);selectEl(img.id);}toast('Uploaded and added to Media Library. Save draft to keep the page change.');}catch(err){console.error('Image upload failed:',err);const message=String(err?.message||err||'Unknown upload error');toast('Upload failed: '+message.slice(0,140));}finally{e.target.value=''}});
+$('image-upload').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(!file.type.startsWith('image/'))return toast('Please choose an image file.');if(file.size>30*1024*1024)return toast('Please choose an image under 30 MB.');toast('Uploading image to your secure Media Library…');try{const safeName=String(file.name||'image').replace(/[^a-zA-Z0-9._-]/g,'_').slice(0,150);const media={brand:mediaUploadBrand||(brand==='nira'?'nira-editorial':'pixel-studios'),contentType:file.type,size:file.size,filename:file.name};const signResponse=await fetch('/api/media/upload-token',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({...media,action:'sign'})});const signed=await signResponse.json().catch(()=>({}));if(!signResponse.ok)throw new Error(signed.error||'Could not prepare secure upload');const putResponse=await fetch(signed.presignedUrl,{method:'PUT',headers:{'Content-Type':file.type},body:file});if(!putResponse.ok)throw new Error('Private storage upload failed ('+putResponse.status+')');const registerResponse=await fetch('/api/media/upload-token',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({...media,action:'register',pathname:signed.pathname,originalFilename:file.name})});const registered=await registerResponse.json().catch(()=>({}));if(!registerResponse.ok)throw new Error(registered.error||'Image uploaded but could not be added to Media Library');const blob={pathname:signed.pathname};const imageUrl='/api/media/file?pathname='+encodeURIComponent(blob.pathname);if(selected==='photo'){$('photo').src=imageUrl;selectEl('photo');}else{const img=document.createElement('img');img.src=imageUrl;img.alt=file.name;img.id='added-image-'+Date.now();img.style.cssText='position:absolute;left:52%;top:12%;width:28%;height:42%;object-fit:cover;cursor:move;z-index:4';$('canvas').appendChild(img);els[img.id]=img;bindElement(img.id);selectEl(img.id);}toast('Uploaded and added to Media Library. Save draft to keep the page change.');if(document.querySelector('[data-panel=media].active'))renderMediaAssets();}catch(err){console.error('Image upload failed:',err);const message=String(err?.message||err||'Unknown upload error');toast('Upload failed: '+message.slice(0,140));}finally{e.target.value=''}});
 $('addtext').addEventListener('click',()=>{const el=document.createElement('div');el.contentEditable='true';el.textContent='New editorial text';el.style.cssText='position:absolute;left:8%;top:82%;font:italic 20px Playfair Display,serif;color:#87366e;cursor:move;z-index:3';el.id='added-'+Date.now();$('canvas').appendChild(el);els[el.id]=el;el.addEventListener('click',ev=>{ev.stopPropagation();selectEl(el.id)});selectEl(el.id);toast('Text element added.')});
 $('delete').addEventListener('click',()=>{if(selected&&els[selected]&&selected!=='headline'&&selected!=='subcopy'&&selected!=='kicker'){els[selected].remove();delete els[selected];selected='';$('selection-note').textContent='Selected: none';toast('Selected layer deleted.')}else if(selected==='photo'||selected==='caption'||selected==='kicker'){if(els[selected])els[selected].style.display='none';toast('Selected element hidden.')}else toast('Choose an added element or image to delete it.')});
 function snapshot(){saveActivePage();return {brand,device,activePage,canvasPages,canvasBackground:$('canvas').style.background,html:$('canvas').innerHTML,headline:$('headline')?.innerHTML||'',subcopy:$('subcopy')?.innerText||'',caption:$('caption')?.textContent||'',headlineColor:$('headline')?.style.color||'',headlineSize:$('headline')?.style.fontSize||'',imageWidth:$('photo')?.style.width||'',updatedAt:new Date().toISOString()}}
@@ -33,6 +33,62 @@ $('reset').addEventListener('click',()=>{if(!confirm('Reset this canvas to its s
 $('preview').addEventListener('click',()=>{document.querySelectorAll('.selected').forEach(x=>x.classList.remove('selected'));toast('Preview mode — draft remains local to this browser.');});
 selectEl('headline');
 
+let mediaUploadBrand=null;
+let mediaAssetsCache=[];
+let activeMediaAsset=null;
+function currentMediaBrand(){
+ const value=$('media-brand-filter')?.value||'current';
+ if(value==='all')return '';
+ if(value==='current')return brand==='nira'?'nira-editorial':'pixel-studios';
+ return value;
+}
+async function renderMediaAssets(){
+ const list=$('media-library-items');if(!list)return;
+ list.innerHTML='<p style="grid-column:1/-1">Loading images…</p>';
+ $('media-library-count').textContent='Loading images…';
+ try{
+  const key=currentMediaBrand();
+  const response=await fetch('/api/media/list'+(key?'?brand='+encodeURIComponent(key):''),{credentials:'same-origin',cache:'no-store'});
+  const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not load images');
+  mediaAssetsCache=result.assets||[];
+  filterMediaAssets();
+ }catch(error){
+  list.innerHTML='<p style="grid-column:1/-1">Could not load images. Please refresh or sign in again.</p>';
+  $('media-library-count').textContent=error.message||'Media library unavailable';
+  console.error('Media library error',error);
+ }
+}
+function filterMediaAssets(){
+ const list=$('media-library-items');if(!list)return;
+ const q=($('media-search')?.value||'').trim().toLowerCase();
+ const items=mediaAssetsCache.filter(a=>String(a.original_filename||a.object_key||'').toLowerCase().includes(q));
+ list.innerHTML='';
+ $('media-library-count').textContent=items.length+' image'+(items.length===1?'':'s')+' · up to 300 shown';
+ if(!items.length){list.innerHTML='<p style="grid-column:1/-1">No matching images yet. Upload an image to start your library.</p>';return;}
+ items.forEach(asset=>{
+  const url='/api/media/file?pathname='+encodeURIComponent(asset.object_key);
+  const card=document.createElement('div');card.style.cssText='min-width:0;border:1px solid #e3d9e0;border-radius:9px;overflow:hidden;background:#fff';
+  const img=document.createElement('img');img.src=url;img.alt=asset.alt_text||asset.original_filename||'Uploaded image';img.loading='lazy';img.style.cssText='display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#eee';
+  img.onerror=()=>{img.alt='Image unavailable';img.style.opacity='.35';};
+  img.onclick=()=>openMediaViewer(asset,url);
+  const meta=document.createElement('div');meta.style.cssText='padding:7px;font-size:10px;line-height:1.4;overflow-wrap:anywhere';
+  const name=document.createElement('div');name.style.cssText='font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden';name.textContent=asset.original_filename||asset.object_key;
+  const detail=document.createElement('div');detail.style.cssText='color:var(--muted);margin-top:3px';detail.textContent=(asset.brand||'')+' · '+Math.max(1,Math.round((asset.size_bytes||0)/1024))+' KB';
+  const use=document.createElement('button');use.type='button';use.className='btn';use.style.cssText='width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;font-size:10px;padding:8px 3px';use.textContent='Use image';
+  use.onclick=()=>useMediaAsset(asset);
+  meta.append(name,detail);card.append(img,meta,use);list.appendChild(card);
+ });
+}
+function openMediaViewer(asset,url){
+ activeMediaAsset=asset;$('media-viewer-name').textContent=(asset.original_filename||asset.object_key)+' · '+(asset.brand||'')+' · '+Math.round((asset.size_bytes||0)/1024)+' KB';
+ $('media-viewer-image').src=url;$('media-image-viewer').style.display='flex';
+}
+function useMediaAsset(asset){
+ const url='/api/media/file?pathname='+encodeURIComponent(asset.object_key);
+ const target=selected&&els[selected]&&els[selected].tagName?.toLowerCase()==='img'?els[selected]:$('photo');
+ target.src=url;target.style.display='';if(target.id==='photo')selectEl('photo');else selectEl(target.id);
+ toast('Image selected for the canvas. Save draft to keep the change.');
+}
 function openPanel(name){
  document.querySelectorAll('[data-panel]').forEach(x=>x.classList.toggle('active',x.dataset.panel===name));
  const box=$('side-panel');
@@ -44,31 +100,16 @@ function openPanel(name){
   [['headline','Headline text'],['subcopy','Body copy'],['photo','Main image'],['caption','Image caption'],['kicker','Section label']].forEach(([id,label])=>{const b=document.createElement('button');b.textContent='◉  '+label;b.onclick=()=>{selectEl(id);toast(label+' selected on canvas.')};box.appendChild(b)});
   const added=Object.keys(els).filter(k=>k.startsWith('added-'));added.forEach(id=>{const b=document.createElement('button');b.textContent='T  '+els[id].innerText.slice(0,22);b.onclick=()=>selectEl(id);box.appendChild(b)});
  }else if(name==='media'){
-  box.innerHTML='<div class="panel-head">Media library</div><p>Secure cloud images for the selected brand. Tap an image to replace the selected image on the canvas.</p><button id="side-upload">＋ Upload image</button><div id="media-library-items"><p>Loading your images…</p></div>';
-  $('side-upload').onclick=()=> $('image-upload').click();
-  (async()=>{
-   const list=$('media-library-items');
-   try{
-    const key=brand==='nira'?'nira-editorial':'pixel-studios';
-    const response=await fetch('/api/media/list?brand='+encodeURIComponent(key),{credentials:'same-origin',cache:'no-store'});
-    const result=await response.json();
-    if(!response.ok)throw new Error(result.error||'Could not load images');
-    list.innerHTML='';
-    if(!result.assets?.length){list.innerHTML='<p>Your Media Library is empty. Upload a photo to begin.</p>';return;}
-    result.assets.forEach(asset=>{
-     const card=document.createElement('button');card.type='button';card.style.cssText='display:flex;gap:10px;align-items:center;width:100%;text-align:left;margin:8px 0;padding:8px;border:1px solid #e3d9e0;border-radius:8px;background:#fff;color:#241a22;cursor:pointer';
-     const img=document.createElement('img');img.src='/api/media/file?pathname='+encodeURIComponent(asset.object_key);img.alt=asset.alt_text||asset.original_filename||'Uploaded image';img.style.cssText='width:76px;height:64px;object-fit:cover;border-radius:4px;flex:none';
-     const meta=document.createElement('span');meta.style.cssText='font-size:12px;overflow-wrap:anywhere';meta.textContent=(asset.original_filename||asset.object_key)+' · '+Math.round((asset.size_bytes||0)/1024)+' KB';
-     card.append(img,meta);
-     card.onclick=()=>{
-      const target=selected&&els[selected]&&els[selected].tagName?.toLowerCase()==='img'?els[selected]:$('photo');
-      target.src=img.src;target.style.display='';if(target.id==='photo')selectEl('photo');else selectEl(target.id);
-      toast('Image replaced on canvas. Save draft to keep the change.');
-     };
-     list.appendChild(card);
-    });
-   }catch(error){list.innerHTML='<p>Could not load Media Library. Please refresh and sign in again if needed.</p>';console.error(error);}
-  })();
+  box.innerHTML='<div class="panel-head">Media library</div><p>Upload, browse and preview your saved images. Choose an image to place it on the canvas.</p><div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0"><button id="side-upload" class="btn dark" type="button">＋ Upload image</button><button id="media-refresh" class="btn" type="button">↻ Refresh</button></div><label style="display:block;font-size:11px;margin:8px 0 4px">Show images for</label><select id="media-brand-filter" class="btn" style="width:100%"><option value="current">Selected brand</option><option value="nira-editorial">Nira Editorial</option><option value="pixel-studios">Pixel Studios</option><option value="shared">Shared</option><option value="all">All brands</option></select><input id="media-search" class="btn" type="search" placeholder="Search image names…" style="width:100%;margin-top:8px;text-align:left"><div id="media-library-count" style="font-size:11px;color:var(--muted);margin:10px 0">Loading images…</div><div id="media-library-items" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px"><p>Loading your images…</p></div><div id="media-image-viewer" style="display:none;position:fixed;inset:0;z-index:9999;background:#171116eF;align-items:center;justify-content:center;padding:20px"><div style="background:white;border-radius:12px;padding:12px;max-width:min(92vw,850px);max-height:90vh;overflow:auto"><button id="media-viewer-close" class="btn" type="button" style="float:right">Close ✕</button><div id="media-viewer-name" style="font-size:13px;font-weight:700;padding:12px 0;overflow-wrap:anywhere"></div><img id="media-viewer-image" alt="Selected uploaded image" style="display:block;max-width:100%;max-height:65vh;object-fit:contain;margin:auto"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button id="media-use-canvas" class="btn dark" type="button">Use on canvas</button><button id="media-open-full" class="btn" type="button">Open full image</button></div></div></div>';
+  $('side-upload').onclick=()=>{mediaUploadBrand=($('media-brand-filter').value==='current'?(brand==='nira'?'nira-editorial':'pixel-studios'):$('media-brand-filter').value);if(mediaUploadBrand==='all')mediaUploadBrand=brand==='nira'?'nira-editorial':'pixel-studios';$('image-upload').click();};
+  $('media-refresh').onclick=()=>renderMediaAssets();
+  $('media-brand-filter').onchange=()=>renderMediaAssets();
+  $('media-search').oninput=()=>filterMediaAssets();
+  $('media-viewer-close').onclick=()=>{$('media-image-viewer').style.display='none';};
+  $('media-image-viewer').onclick=e=>{if(e.target.id==='media-image-viewer')$('media-image-viewer').style.display='none';};
+  $('media-use-canvas').onclick=()=>{if(!activeMediaAsset)return;useMediaAsset(activeMediaAsset);$('media-image-viewer').style.display='none';};
+  $('media-open-full').onclick=()=>{if(activeMediaAsset)window.open('/api/media/file?pathname='+encodeURIComponent(activeMediaAsset.object_key),'_blank','noopener');};
+  renderMediaAssets();
  }else if(name==='type'){
   box.innerHTML='<div class="panel-head">Typography</div><p>Choose an element on the canvas, then adjust its type on the right.</p><button id="type-headline">Edit headline typography</button><button id="type-body">Edit body typography</button>';
   $('type-headline').onclick=()=>{selectEl('headline');$('font-family').focus();$('font-family').scrollIntoView({behavior:'smooth',block:'center'})};
