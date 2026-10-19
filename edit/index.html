@@ -200,7 +200,7 @@ function websiteSelector(el){
  const parts=[];let node=el;
  while(node&&node.nodeType===1&&node.tagName.toLowerCase()!=='html'){
   let part=node.tagName.toLowerCase();
-  if(node.classList&&node.classList.length)part+='.'+Array.from(node.classList).filter(c=>/^[a-zA-Z_-][\\w-]*$/.test(c)).slice(0,2).join('.');
+  if(node.classList&&node.classList.length)part+='.'+Array.from(node.classList).filter(c=>/^[a-zA-Z_-][\w-]*$/.test(c)).slice(0,2).join('.');
   const parent=node.parentElement;
   if(parent){const siblings=Array.from(parent.children).filter(x=>x.tagName===node.tagName);if(siblings.length>1)part+=':nth-of-type('+(siblings.indexOf(node)+1)+')';}
   parts.unshift(part);node=parent;
@@ -255,7 +255,7 @@ function attachWebsiteSelection(){
   const selector=websiteSelector(el);$('website-edit-selector').value=selector;
   $('website-edit-text').value=el.matches('img')?'':(el.innerText||el.textContent||'').trim();
   $('website-edit-image').value=el.matches('img')?el.src:(el.querySelector('img')?.src||'');
-  const c=getComputedStyle(el).color.match(/\\d+/g),bg=getComputedStyle(el).backgroundColor.match(/\\d+/g);
+  const c=getComputedStyle(el).color.match(/\d+/g),bg=getComputedStyle(el).backgroundColor.match(/\d+/g);
   if(c&&c.length>=3)$('website-edit-color').value='#'+c.slice(0,3).map(v=>Number(v).toString(16).padStart(2,'0')).join('');
   if(bg&&bg.length>=3&&Number(bg[3]||1)>0)$('website-edit-bg').value='#'+bg.slice(0,3).map(v=>Number(v).toString(16).padStart(2,'0')).join('');
   websiteStatus('Selected '+selector+'. Edit the fields and tap Apply to live preview.');
