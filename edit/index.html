@@ -220,10 +220,10 @@ rebindCanvas();
 
 let workView='canvas';
 function showWebsitePreview(){
- if($('preview-page').value==='/'){
-  $('preview-page').value=brand==='nira'?'/nira-editorial/':'/pixel-studios/';
-  const pageSelect=$('website-edit-page');if(pageSelect)pageSelect.value=$('preview-page').value;
- }
+ // Keep the page explicitly selected by the user. In particular, do not
+ // switch away from the homepage after applying a canvas to its draft.
+ const pageSelect=$('website-edit-page');
+ if(pageSelect)pageSelect.value=$('preview-page').value;
  workView='website';
  document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
  $('canvas-wrap').style.display='none';$('canvas-actions').style.display='none';$('website-preview-wrap').style.display='block';$('website-preview-controls').style.display='flex';$('devicebar').style.display='none';
