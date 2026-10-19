@@ -414,8 +414,10 @@ function loadWebsiteSection(){
    const doc=frame.contentDocument;
    if(doc){
     doc.querySelectorAll('[data-editor-old-outline]').forEach(el=>el.style.outline=el.dataset.editorOldOutline||'');
-    // Mirror canvas content into the selected page's hero without replacing its layout or styles.
-    const hero=doc.querySelector('.hero');
+    // Canvas content belongs only to its matching brand page.
+    // Never mirror canvas changes into the homepage or the other brand.
+    const canvasPage=brand==='nira'?'/nira-editorial/':'/pixel-studios/';
+    const hero=page===canvasPage?doc.querySelector('.hero'):null;
     if(hero){
      const title=hero.querySelector('h1');
      const copy=hero.querySelector('.hero-copy p, p');
