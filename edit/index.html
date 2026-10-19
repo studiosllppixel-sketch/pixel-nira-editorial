@@ -228,6 +228,7 @@ async function loadWebsiteDraft(){
   const content=page?.draft_content||page?.draftContent||page?.published_content||page?.publishedContent||{};
   websiteEdits=Array.isArray(content.websiteEdits)?content.websiteEdits.slice():[];
   websiteStatus('Loaded '+websiteEdits.length+' saved website edit(s). Select an element in the preview to edit it.');
+  if(workView==='website')loadWebsiteSection();
  }catch(e){console.warn(e);websiteEdits=[];websiteStatus('Could not load saved edits. You can still preview changes; sign in again if saving fails.');}
 }
 function applyEditToDocument(doc,edit){
