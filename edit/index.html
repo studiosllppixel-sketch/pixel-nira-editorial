@@ -73,24 +73,36 @@ async function saveCanvasDraft(){
  const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Server draft save failed');
  toast('Canvas draft saved for '+(pageKey==='home'?'Main homepage':pageKey==='pixel-studios'?'Pixel Studios':'Nira Editorial')+'. Included in that page draft; publish when ready.');
 }
+let canvasLoadRequest=0;
 async function loadCanvasDraft(){
+ const loadId=++canvasLoadRequest;
+ const path=$('preview-page')?.value|| (brand==='nira'?'/nira-editorial/':'/pixel-studios/');
+ const pageKey=pageKeyForPath(path);
+ const busyTargets=workView==='canvas'?[$('canvas-wrap'),$('canvas-actions'),$('side-panel'),document.querySelector('.rightbar')].filter(Boolean):[];
+ busyTargets.forEach(el=>{el.style.pointerEvents='none';el.setAttribute('aria-busy','true')});
  try{
-  const path=$('preview-page')?.value|| (brand==='nira'?'/nira-editorial/':'/pixel-studios/');
-  const pageKey=pageKeyForPath(path);
   const response=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});
   const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load canvas draft');
+  if(loadId!==canvasLoadRequest||pageKey!==pageKeyForPath($('preview-page')?.value||path))return;
   const page=(data.pages||data).find(p=>p.page_key===pageKey||p.pageKey===pageKey);
   const content=page?.draft_content||page?.draftContent||page?.published_content||page?.publishedContent||{};
   if(Array.isArray(content.canvasPages)&&content.canvasPages.length){
-   canvasPages=content.canvasPages;activePage=Math.max(0,Math.min(Number(content.activePage)||0,canvasPages.length-1));
-   const saved=canvasPages[activePage];$('canvas').innerHTML=saved.html;$('canvas').style.background=saved.bg||content.canvasBackground||'#fbf6f8';
-   $('page-title').textContent=saved.title||content.pageTitle||'Canvas design';rebindCanvas();
+   canvasPages=content.canvasPages.map((item,index)=>({html:String(item?.html??starterCanvasHtml),bg:String(item?.bg||content.canvasBackground||'#fbf6f8'),title:String(item?.title||'Canvas '+(index+1))}));
   }else if(typeof content.canvasHtml==='string'&&content.canvasHtml){
-   $('canvas').innerHTML=content.canvasHtml;$('canvas').style.background=content.canvasBackground||'#fbf6f8';
-   $('page-title').textContent=content.pageTitle||'Canvas design';canvasPages=[{html:content.canvasHtml,bg:$('canvas').style.background,title:$('page-title').textContent}];activePage=0;rebindCanvas();
+   canvasPages=[{html:content.canvasHtml,bg:content.canvasBackground||'#fbf6f8',title:content.pageTitle||'Cover canvas'}];
+  }else{
+   canvasPages=[{html:starterCanvasHtml,bg:brand==='pixel'?'#171116':'#fbf6f8',title:'Cover canvas'}];
   }
+  activePage=Math.max(0,Math.min(Number(content.activePage)||0,canvasPages.length-1));
+  const saved=canvasPages[activePage];
+  $('canvas').innerHTML=saved.html;$('canvas').style.background=saved.bg;
+  $('page-title').textContent=saved.title;rebindCanvas();
+  if(document.querySelector('[data-panel="canvases"]')?.classList.contains('active'))renderCanvasList();
   toast('Saved canvas loaded for '+(pageKey==='home'?'Main homepage':pageKey==='pixel-studios'?'Pixel Studios':'Nira Editorial')+'.');
- }catch(error){console.warn('Canvas draft load failed',error);toast('Could not load saved canvas. Please check your sign-in and try again.');}
+ }catch(error){if(loadId===canvasLoadRequest){console.warn('Canvas draft load failed',error);toast('Could not load saved canvas. Please check your sign-in and try again.');}}
+ finally{
+  if(loadId===canvasLoadRequest)busyTargets.forEach(el=>{el.style.pointerEvents='';el.removeAttribute('aria-busy')});
+ }
 }
 $('save').addEventListener('click',async()=>{const button=$('save');button.disabled=true;button.textContent='Saving…';try{await saveCanvasDraft();}catch(e){console.error(e);toast('Save failed: '+(e.message||'Please sign in again.'));}finally{button.disabled=false;button.textContent='Save draft';}});
 $('reset').addEventListener('click',()=>{if(!confirm('Reset this canvas to its starter layout?'))return;location.reload()});
@@ -237,7 +249,7 @@ function renderCanvasList(){
  $('delete-canvas-panel').onclick=async()=>{if(canvasPages.length<=1){$('canvas-action-status').textContent='Keep at least one canvas. You cannot delete the only canvas.';toast('At least one canvas must remain.');return;}const current=canvasPages[activePage];if(!confirm('Delete "'+(current?.title||'this canvas')+'" from '+$('canvas-owner-label').textContent+'? This only changes the draft until you save it.'))return;canvasPages.splice(activePage,1);activePage=Math.max(0,activePage-1);const p=canvasPages[activePage];$('canvas').innerHTML=p.html;$('canvas').style.background=p.bg||'#fbf6f8';$('page-title').textContent=p.title||'Canvas design';rebindCanvas();renderCanvasList();$('canvas-action-status').textContent='Canvas deleted from this draft. Click Save draft to keep the change.';toast('Canvas deleted from draft.');};
 }
 function addCanvas(){
- saveActivePage();const template=canvasPages[0]||{html:$('canvas').innerHTML,bg:'#fbf6f8',title:'New canvas'};
+ saveActivePage();const template=canvasPages[activePage]||{html:$('canvas').innerHTML,bg:'#fbf6f8',title:'New canvas'};
  const wrapper=document.createElement('div');wrapper.innerHTML=template.html;
  wrapper.querySelectorAll('[id]').forEach(el=>{if(['headline','subcopy','photo','caption','kicker'].includes(el.id))return;el.id='added-'+Date.now()+'-'+Math.random().toString(36).slice(2,6)});
  const title='Canvas '+(canvasPages.length+1);
@@ -288,7 +300,8 @@ function openStructurePanel(name){
  }
 }
 document.querySelectorAll('[data-panel="canvases"],[data-panel="hero"],[data-panel="headerfooter"]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-panel]').forEach(x=>x.classList.toggle('active',x===b));openStructurePanel(b.dataset.panel)}));
-canvasPages=[{html:$('canvas').innerHTML,bg:getComputedStyle($('canvas')).backgroundColor,title:'Cover canvas'}];
+const starterCanvasHtml=$('canvas').innerHTML;
+canvasPages=[{html:starterCanvasHtml,bg:getComputedStyle($('canvas')).backgroundColor,title:'Cover canvas'}];
 rebindCanvas();
 
 let workView='canvas';
