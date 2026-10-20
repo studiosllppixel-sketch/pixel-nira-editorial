@@ -456,6 +456,13 @@ function loadWebsiteSection(){
     // overwrite the page or make its preview differ from the published website.
     websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));
     attachWebsiteSelection();
+    // Load the private draft canvas section into the editor preview without publishing it.
+    fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'}).then(r=>r.json()).then(data=>{
+     const key=pageKeyForPath(page);
+     const record=(data.pages||data).find?.(p=>p.page_key===key||p.pageKey===key);
+     const content=record?.draft_content||record?.draftContent||record?.published_content||record?.publishedContent||{};
+     if(content.canvasSection)placeCanvasSectionInPreview(content.canvasSection);
+    }).catch(()=>{});
    }
    const targets={header:doc.querySelector('header'),hero:doc.querySelector('.hero, .hero-section, main section:first-of-type'),stories:doc.querySelector('#stories, .stories, main section:nth-of-type(2), main'),footer:doc.querySelector('footer')};
    if(section!=='whole'){const target=targets[section];if(target){target.scrollIntoView({block:'start'});target.style.outline='2px solid #a34782';target.style.outlineOffset='-2px';}}
