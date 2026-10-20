@@ -17,6 +17,27 @@
 .brand-logo{display:flex;align-items:center;justify-content:flex-start;min-width:0}.brand-logo{background:#f4f0e8;padding:2px 6px;border-radius:2px;width:270px;height:76px;max-width:100%;overflow:hidden;display:flex;align-items:center}.brand-logo img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}.wordmark img{width:clamp(220px,25vw,290px);height:76px;object-fit:contain;object-position:center}.masthead .brand.rightmark{font-size:10px}.masthead .brand.rightmark strong{font-size:15px}@media(max-width:640px){.masthead{grid-template-columns:1fr 1.2fr;gap:12px;padding:10px 5vw}.masthead .wordmark{grid-column:2;grid-row:1}.masthead .brand.rightmark{display:none}.brand-logo{width:180px;height:52px;padding:2px 4px}.brand-logo img{width:100%;height:100%}.wordmark img{width:100%;height:56px}}
 @media(min-width:761px){.hero{position:relative!important;display:flex!important;align-items:center!important;min-height:680px!important;padding:72px 7vw!important;grid-template-columns:none!important;gap:0!important}.hero-copy{max-width:56%!important;z-index:2!important}.hero-art{position:absolute!important;inset:0 0 0 36%!important;min-height:100%!important;background:#34212c!important}.hero-art img{height:100%!important;min-height:100%!important;object-fit:cover!important}.hero-art:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#171116 0%,rgba(23,17,22,.78) 16%,rgba(23,17,22,.12) 62%,rgba(23,17,22,.1) 100%)}.hero h1{font-size:clamp(60px,9vw,132px)!important;line-height:.88!important;color:#fbf6f0!important}.hero h1 em{color:#e8b9d1!important}.hero p{color:#f0e7eb!important}.hero .eyebrow{color:#e8b9d1!important}.hero .textlink{color:#fbf6f0!important;border-color:#fbf6f0!important}.image-note{z-index:2!important;left:auto!important;right:22px!important;bottom:22px!important;background:rgba(23,17,22,.7)!important;color:#fbf6f0!important}}@media(max-width:760px){.hero{position:relative!important;display:flex!important;min-height:690px!important;padding:45px 6vw!important;align-items:flex-end!important;grid-template-columns:none!important;gap:0!important}.hero-copy{max-width:100%!important;z-index:2!important;padding:0 0 35px!important}.hero-art{position:absolute!important;inset:0!important;min-height:100%!important}.hero-art img{height:100%!important;min-height:100%!important;object-fit:cover!important}.hero-art:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#171116 0%,rgba(23,17,22,.78) 28%,rgba(23,17,22,.08) 100%)}.hero h1{font-size:clamp(58px,15vw,86px)!important;line-height:.9!important;color:#fbf6f0!important}.hero h1 em{color:#e8b9d1!important}.hero p{color:#f0e7eb!important}.hero .eyebrow{color:#e8b9d1!important}.hero .textlink{color:#fbf6f0!important;border-color:#fbf6f0!important}.image-note{left:auto!important;right:12px!important;bottom:12px!important}}
 .category-explore{background:#171116;color:#fbf6f0;padding:64px 5vw}.category-explore .section-head p{color:#c8b8c5}.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #57404f;border-left:1px solid #57404f}.category-grid a{min-height:145px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid #57404f;border-bottom:1px solid #57404f;transition:background .25s}.category-grid a:hover{background:#392131}.category-grid span{font-size:9px;letter-spacing:.18em;color:#d7a8c6}.category-grid strong{font:500 clamp(22px,3vw,38px)/1.05 var(--serif)}.category-grid i{font-style:normal;align-self:flex-end;color:#e8b9d1}@media(max-width:760px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.upcomings{background:#171116;color:#fbf6f0;border-block:1px solid #4b3444}
+.upcomings .section-head p{color:#d0c3cb}
+.model-call{display:grid;grid-template-columns:.8fr 1.2fr;gap:40px;padding:28px;background:linear-gradient(125deg,#24151f,#382036);border:1px solid #57404f}
+.model-call-copy .call-tag{display:inline-block;color:#e8b9d1;font-size:9px;letter-spacing:.18em;text-transform:uppercase;border:1px solid #73506a;padding:8px 10px}
+.model-call-copy h3{font:500 clamp(30px,4vw,47px)/1.02 var(--serif);letter-spacing:-.035em;margin:20px 0 12px}
+.model-call-copy p{color:#d0c3cb;font-size:12px;line-height:1.8;max-width:390px}
+.model-call-copy .call-note{font-size:10px;color:#e8b9d1;border-top:1px solid #57404f;padding-top:14px;margin-top:22px}
+.model-form{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.model-form label{display:grid;gap:7px;color:#e8b9d1;font-size:9px;text-transform:uppercase;letter-spacing:.13em}
+.model-form label.full{grid-column:1/-1}
+.model-form input,.model-form textarea{width:100%;border:1px solid #73506a;background:#241a23;color:#fbf6f0;padding:13px 14px;font:13px var(--sans);letter-spacing:normal;text-transform:none;border-radius:0}
+.model-form input:focus,.model-form textarea:focus{outline:1px solid #e8b9d1;border-color:#e8b9d1}
+.model-form input::placeholder,.model-form textarea::placeholder{color:#ac9ca7}
+.model-form textarea{resize:vertical;min-height:92px}
+.model-actions{grid-column:1/-1;display:flex;gap:11px;flex-wrap:wrap;margin-top:3px}
+.model-actions button{border:1px solid #e8b9d1;background:#e8b9d1;color:#21141e;padding:13px 16px;font:700 9px var(--sans);letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.model-actions .model-whatsapp{background:transparent;color:#fbf6f0}
+.model-privacy{grid-column:1/-1;color:#bfb0ba;font-size:10px;line-height:1.6;margin:0}
+.model-status{grid-column:1/-1;min-height:18px;color:#e8b9d1;font-size:11px;margin:0}
+@media(max-width:760px){.model-call{grid-template-columns:1fr;padding:20px;gap:22px}.model-form{grid-template-columns:1fr}.model-form label.full,.model-actions,.model-privacy,.model-status{grid-column:1}}
 </style>
 <script>document.documentElement.classList.add('published-content-loading');</script>
 </head>
@@ -27,7 +48,7 @@
 <a class="wordmark" href="/" aria-label="Nira Editorial home"><img src="/nira.png" alt="Nira Editorial logo"></a>
 <div class="brand rightmark">A point of view<strong>Pixel × Nira</strong></div>
 </header>
-<nav class="nav" aria-label="Main navigation"><a href="#stories">The Edit</a><a href="#fashion">Fashion</a><a href="#culture">Culture</a><a href="/pixel-studios/">Pixel Studios</a><a href="/nira-editorial/">Nira Editorial</a><a href="#newsletter">The Letter</a></nav>
+<nav class="nav" aria-label="Main navigation"><a href="#stories">The Edit</a><a href="#fashion">Fashion</a><a href="#culture">Culture</a><a href="/pixel-studios/">Pixel Studios</a><a href="/nira-editorial/">Nira Editorial</a><a href="#upcomings">Upcomings</a><a href="#newsletter">The Letter</a></nav>
 <main>
 <section class="hero">
 <div class="hero-copy"><div class="eyebrow">The latest · Pixel Studios × Nira Editorial</div><h1>Modern<br>Women,<br><em>Bolder Stories.</em></h1><p>Fashion, beauty, culture and the people shaping tomorrow — a shared vision by Pixel Studios and Nira Editorial.</p><a class="textlink" href="#stories">Explore the editorial <span aria-hidden="true">↗</span></a></div>
@@ -47,12 +68,46 @@
 <a class="brand-panel" id="nira" href="/nira-editorial/"><img src="https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?auto=format&fit=crop&w=1200&q=85" alt="Thoughtfully styled garments in a fashion editorial"><div class="panel-content"><div class="label">Fashion · Culture · Perspective</div><h2>Nira<br><em>Editorial.</em></h2><p>A journal of style and substance, told through a distinctive editorial lens.</p><span>Enter Nira Editorial ↗</span></div></a>
 </section>
 <section class="quote" id="culture"><div class="mark">“</div><blockquote>Style is not simply what we wear. It is the point of view we bring into the world.</blockquote><small>Pixel Studios × Nira Editorial</small></section>
+
+<section class="upcomings section" id="upcomings" aria-labelledby="upcomings-title">
+ <div class="section-head"><div><div class="eyebrow" style="color:#e8b9d1">Casting &amp; collaborations</div><h2 id="upcomings-title">Upcomings.</h2></div><p>Upcoming editorials, fashion shoots and campaign opportunities from Pixel Studios × Nira Editorial.</p></div>
+ <div class="model-call">
+  <div class="model-call-copy"><span class="call-tag">Model applications open</span><h3>Be part of what’s next.</h3><p>Share your profile for consideration in upcoming shoots and campaigns. If you’re applying for a specific job, add its title so the team knows which opportunity you mean.</p><p class="call-note">No date-specific casting call is posted yet. General model profiles are welcome for future projects.</p></div>
+  <form class="model-form" id="model-application">
+   <label>Your name<input name="name" autocomplete="name" required placeholder="Full name"></label>
+   <label>Email address<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+   <label>City<input name="city" autocomplete="address-level2" required placeholder="Your city"></label>
+   <label>Phone / WhatsApp<input name="phone" type="tel" autocomplete="tel" placeholder="+91 …"></label>
+   <label class="full">Instagram or portfolio link<input name="profile" type="url" required placeholder="https://…"></label>
+   <label class="full">Job title, if applying for a specific opportunity<input name="opportunity" placeholder="Optional · or write “General model profile”"></label>
+   <label class="full">A little about you<textarea name="about" rows="3" required placeholder="Your experience, availability, and anything else you’d like us to know"></textarea></label>
+   <div class="model-actions"><button type="submit">Apply by email ↗</button><button class="model-whatsapp" type="button" id="model-apply-whatsapp">Apply on WhatsApp ↗</button></div>
+   <p class="model-privacy">Your application is placed in a message for you to review. It is sent only after you press Send in email or WhatsApp.</p>
+   <p class="model-status" id="model-application-status" aria-live="polite"></p>
+  </form>
+ </div>
+</section>
+
 <section class="newsletter" id="newsletter"><div><div class="eyebrow">A note from our world</div><h2>Good things<br>arrive <em>occasionally.</em></h2><p>Our latest stories, visual inspirations and new perspectives — thoughtfully sent, never too often.</p></div><div><form id="signup" class="signup"><input type="email" aria-label="Email address" placeholder="Your email address" required><button type="submit">Join the list ↗</button></form><div class="signup-status" id="signup-status" aria-live="polite"></div></div></section>
 </main>
-<footer><div class="footer-top"><div class="footer-logo">Pixel Studios <em>×</em><br>Nira Editorial</div><div class="footer-links"><a href="#stories">The Edit</a><a href="#pixel">Pixel Studios</a><a href="#nira">Nira Editorial</a><a href="#newsletter">Contact & Updates</a></div></div><div class="footer-bottom"><span>© 2026 Pixel Studios × Nira Editorial</span><span>Made with intention. Seen with feeling.</span></div></footer>
+<footer><div class="footer-top"><div class="footer-logo">Pixel Studios <em>×</em><br>Nira Editorial</div><div class="footer-links"><a href="#stories">The Edit</a><a href="#pixel">Pixel Studios</a><a href="#nira">Nira Editorial</a><a href="#upcomings">Upcomings</a><a href="#newsletter">Contact & Updates</a></div></div><div class="footer-bottom"><span>© 2026 Pixel Studios × Nira Editorial</span><span>Made with intention. Seen with feeling.</span></div></footer>
 <script>
 document.getElementById('signup').addEventListener('submit',function(e){e.preventDefault();document.getElementById('signup-status').textContent='Thank you for your interest. Newsletter sign-up will be connected soon.';this.reset();});
 </script>
+
+<script>
+(function(){
+ const form=document.getElementById('model-application');
+ const whatsapp=document.getElementById('model-apply-whatsapp');
+ const status=document.getElementById('model-application-status');
+ if(!form||!whatsapp)return;
+ function application(){const d=new FormData(form);return {name:d.get('name')||'',email:d.get('email')||'',city:d.get('city')||'',phone:d.get('phone')||'',profile:d.get('profile')||'',opportunity:d.get('opportunity')||'General model profile',about:d.get('about')||''};}
+ function brief(v){return ['Hello Pixel Studios × Nira Editorial, I’d like to apply as a model.','Name: '+v.name,'Email: '+v.email,'City: '+v.city,'Phone / WhatsApp: '+(v.phone||'Not provided'),'Instagram / portfolio: '+v.profile,'Opportunity: '+v.opportunity,'About me: '+v.about].join('\\n');}
+ form.addEventListener('submit',function(e){e.preventDefault();if(!form.reportValidity())return;const v=application();window.location.href='mailto:niraeditorial@gmail.com?subject='+encodeURIComponent('Model application — '+v.name)+'&body='+encodeURIComponent(brief(v));status.textContent='Your email app has opened with your application. Review it, then press Send.';});
+ whatsapp.addEventListener('click',function(){if(!form.reportValidity())return;const v=application();window.open('https://wa.me/917358570707?text='+encodeURIComponent(brief(v)),'_blank','noopener,noreferrer');status.textContent='Your WhatsApp chat has opened with your application. Review it, then press Send.';});
+})();
+</script>
+
 
 <script>
 (function(){
