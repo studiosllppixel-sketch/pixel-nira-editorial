@@ -65,10 +65,10 @@ async function saveCanvasDraft(){
  const data=await current.json();if(!current.ok)throw new Error(data.error||'Could not load saved page');
  const page=(data.pages||data).find(p=>p.page_key===pageKey||p.pageKey===pageKey)||{};
  const content=page.draft_content||page.draftContent||page.published_content||page.publishedContent||{};
- Object.assign(content,{brand,pageTitle:$('page-title').textContent,canvasHtml:$('canvas').innerHTML,canvasBackground:$('canvas').style.background||getComputedStyle($('canvas')).backgroundColor,heroHeadline:$('headline')?.innerHTML||'',heroCopy:$('subcopy')?.innerText||'',heroImage:$('photo')?.src||'',heroKicker:$('kicker')?.textContent||'',caption:$('caption')?.textContent||'',canvasPages,activePage,updatedAt:new Date().toISOString()});
+ Object.assign(content,{brand,pageTitle:$('page-title').textContent,canvasHtml:$('canvas').innerHTML,canvasBackground:$('canvas').style.background||getComputedStyle($('canvas')).backgroundColor,heroHeadline:$('headline')?.innerHTML||'',heroCopy:$('subcopy')?.innerText||'',heroImage:$('photo')?.src||'',heroKicker:$('kicker')?.textContent||'',caption:$('caption')?.textContent||'',canvasPages,activePage,canvasSection:exportCanvasSection(),updatedAt:new Date().toISOString()});
  const response=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey,title:content.pageTitle||page.title||pageKey,content,action:'draft'})});
  const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Server draft save failed');
- toast('Canvas draft saved for '+(pageKey==='home'?'Main homepage':pageKey==='pixel-studios'?'Pixel Studios':'Nira Editorial')+'. It will appear publicly only after publishing.');
+ toast('Canvas draft saved for '+(pageKey==='home'?'Main homepage':pageKey==='pixel-studios'?'Pixel Studios':'Nira Editorial')+'. Included in that page draft; publish when ready.');
 }
 async function loadCanvasDraft(){
  try{
