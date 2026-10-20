@@ -382,7 +382,7 @@ async function loadWebsiteDraft(){
 }
 function restoreWebsiteHighlight(el){if(!el)return;[['outline','editorOldOutline'],['outline-offset','editorOldOutlineOffset'],['box-shadow','editorOldBoxShadow']].forEach(([prop,key])=>{const value=el.dataset[key]||'',priority=el.dataset[key+'Priority']||'';if(value)el.style.setProperty(prop,value,priority);else el.style.removeProperty(prop);});}
 function highlightWebsiteElement(el){[['outline','editorOldOutline'],['outline-offset','editorOldOutlineOffset'],['box-shadow','editorOldBoxShadow']].forEach(([prop,key])=>{el.dataset[key]=el.style.getPropertyValue(prop);el.dataset[key+'Priority']=el.style.getPropertyPriority(prop);});el.style.setProperty('outline','3px solid #c21874','important');el.style.setProperty('outline-offset','4px','important');el.style.setProperty('box-shadow','0 0 0 5px rgba(194,24,116,.24)','important');}
-function websitePositionPercent(position,axis){const parts=String(position||'center center').trim().split(/\\s+/);let token=parts[axis]||'50%';const map={left:0,top:0,center:50,right:100,bottom:100};if(Object.prototype.hasOwnProperty.call(map,token) doc.addEventListener('pointerdown',ev=>{
+function websitePositionPercent(position,axis){const parts=String(position||'center center').trim().split(/\s+/);let token=parts[axis]||'50%';const map={left:0,top:0,center:50,right:100,bottom:100};if(Object.prototype.hasOwnProperty.call(map,token) doc.addEventListener('pointerdown',ev=>{
   const img=ev.target.closest('img');
   if(!img||!selectedWebsiteElement||(selectedWebsiteElement!==img&&!selectedWebsiteElement.contains(img)))return;
   ev.preventDefault();ev.stopPropagation();
