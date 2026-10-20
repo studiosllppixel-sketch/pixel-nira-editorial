@@ -290,7 +290,8 @@ function showWebsitePreview(){
  workView='website';
  document.body.classList.add('website-mode');
  document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
- $('canvas-wrap').style.display='none';$('canvas-actions').style.display='none';$('website-preview-wrap').style.display='block';$('website-preview-controls').style.display='flex';$('devicebar').style.display='flex';document.body.classList.remove('element-selected');
+ $('canvas-wrap').style.display='none';$('canvas-actions').style.display='none';$('website-preview-wrap').style.display='block';$('website-preview-controls').style.display='flex';$('devicebar').style.display='flex';document.body.classList.add('element-selected');
+ openPanel('websitecontent');
  $('page-title').textContent='Actual website preview';$('workspace-help').textContent='Choose a website page and section to preview the real page, not the design canvas.';
  loadWebsiteSection();
 }
