@@ -38,7 +38,7 @@
 .model-privacy{grid-column:1/-1;color:#bfb0ba;font-size:10px;line-height:1.6;margin:0}
 .model-status{grid-column:1/-1;min-height:18px;color:#e8b9d1;font-size:11px;margin:0}
 @media(max-width:760px){.model-call{grid-template-columns:1fr;padding:20px;gap:22px}.model-form{grid-template-columns:1fr}.model-form label.full,.model-actions,.model-privacy,.model-status{grid-column:1}}
-.newsletter-contact{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px}.newsletter-contact a{font-size:9px;letter-spacing:.13em;text-transform:uppercase;border-bottom:1px solid var(--ink);padding-bottom:7px}.newsletter-note{font-size:10px;line-height:1.5;color:var(--muted);margin:12px 0 0}</style>
+.newsletter-contact{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px}.newsletter-contact a{font-size:9px;letter-spacing:.13em;text-transform:uppercase;border-bottom:1px solid var(--ink);padding-bottom:7px}.newsletter-note{font-size:10px;line-height:1.5;color:var(--muted);margin:12px 0 0}html.motion-enabled .motion-reveal{opacity:0;transform:translate3d(0,20px,0);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);transition-delay:var(--motion-delay,0ms)}html.motion-enabled .motion-reveal.motion-in{opacity:1;transform:translate3d(0,0,0)}@media(hover:hover){.hero-art img,.hero-img img,.story img,.tile img,.portfolio-card img,.brand-panel img{transition:transform .8s cubic-bezier(.2,.7,.2,1),filter .45s ease}.hero-art:hover img,.hero-img:hover img{transform:scale(1.025)}.category-grid a,.textlink,.cta,.back,.cross a{transition:transform .25s ease,color .25s ease,background-color .25s ease}.category-grid a:hover,.textlink:hover,.cta:hover,.cross a:hover{transform:translateY(-2px)}}@media(prefers-reduced-motion:reduce){html.motion-enabled .motion-reveal,html.motion-enabled .motion-reveal.motion-in{opacity:1;transform:none;transition:none}html{scroll-behavior:auto!important}}</style>
 <script>document.documentElement.classList.add('published-content-loading');</script>
 </head>
 <body>
@@ -186,5 +186,16 @@ try{
  }
 }catch(e){}finally{document.documentElement.classList.remove('published-content-loading');}})();
 </script>
-</body>
+<script id="site-motion">
+(()=>{try{
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const selector='main .hero > *,main .ticker,main .bar,main .section-head,main .story,main .stories > *,main .category-grid > a,main .brand-panel,main .quote blockquote,main .model-call-copy,main .model-form,main .tile,main .portfolio-heading,main .portfolio-card,main .portfolio-note,main .statement blockquote,main .manifesto,main .inquiry-intro,main .inquiry-form,main .cross > *,main .newsletter > div,footer .footer-top,footer .footer-bottom';
+ const items=[...document.querySelectorAll(selector)].filter((el,i,a)=>a.indexOf(el)===i);
+ if(!items.length)return;
+ document.documentElement.classList.add('motion-enabled');
+ if(!('IntersectionObserver' in window)){items.forEach(el=>el.classList.add('motion-reveal','motion-in'));return;}
+ const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('motion-in');observer.unobserve(entry.target);}});},{threshold:.12,rootMargin:'0px 0px -28px 0px'});
+ items.forEach(el=>{el.style.setProperty('--motion-delay',(Array.prototype.indexOf.call(el.parentElement?.children||[],el)%4*70)+'ms');el.classList.add('motion-reveal');observer.observe(el);});
+}catch(e){document.documentElement.classList.remove('motion-enabled');document.querySelectorAll('.motion-reveal').forEach(el=>el.classList.add('motion-in'));}})();
+</script></body>
 </html>
