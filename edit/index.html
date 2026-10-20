@@ -56,7 +56,40 @@ $('image-upload').addEventListener('change',async e=>{const file=e.target.files[
 $('addtext').addEventListener('click',()=>{const el=document.createElement('div');el.contentEditable='true';el.textContent='New editorial text';el.style.cssText='position:absolute;left:8%;top:82%;font:italic 20px Playfair Display,serif;color:#87366e;cursor:move;z-index:3';el.id='added-'+Date.now();$('canvas').appendChild(el);els[el.id]=el;el.addEventListener('click',ev=>{ev.stopPropagation();selectEl(el.id)});selectEl(el.id);toast('Text element added.')});
 $('delete').addEventListener('click',()=>{if(selected&&els[selected]&&selected!=='headline'&&selected!=='subcopy'&&selected!=='kicker'){els[selected].remove();delete els[selected];selected='';$('selection-note').textContent='Selected: none';toast('Selected layer deleted.')}else if(selected==='photo'||selected==='caption'||selected==='kicker'){if(els[selected])els[selected].style.display='none';toast('Selected element hidden.')}else toast('Choose an added element or image to delete it.')});
 function snapshot(){saveActivePage();return {brand,device,activePage,canvasPages,canvasBackground:$('canvas').style.background,html:$('canvas').innerHTML,headline:$('headline')?.innerHTML||'',subcopy:$('subcopy')?.innerText||'',caption:$('caption')?.textContent||'',headlineColor:$('headline')?.style.color||'',headlineSize:$('headline')?.style.fontSize||'',imageWidth:$('photo')?.style.width||'',updatedAt:new Date().toISOString()}}
-$('save').addEventListener('click',async()=>{try{const draft=snapshot();localStorage.setItem('nira-pixel-editor-draft',JSON.stringify(draft));const pageKey=brand==='nira'?'nira-editorial':'pixel-studios';const content={brand,pageTitle:$('page-title').textContent,canvasHtml:$('canvas').innerHTML,canvasBackground:$('canvas').style.background||getComputedStyle($('canvas')).backgroundColor,heroHeadline:$('headline')?.innerHTML||'',heroCopy:$('subcopy')?.innerText||'',heroImage:$('photo')?.src||'',heroKicker:$('kicker')?.textContent||'',caption:$('caption')?.textContent||'',canvasPages,updatedAt:new Date().toISOString()};const response=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey,title:content.pageTitle,content,action:'draft'})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Server draft save failed');toast('Draft saved securely. Your live website has not been published.');}catch(e){console.error(e);toast('Draft could not reach the server. Your browser copy was kept.');}});
+async function saveCanvasDraft(){
+ const path=$('preview-page')?.value|| (brand==='nira'?'/nira-editorial/':'/pixel-studios/');
+ const pageKey=pageKeyForPath(path);
+ const draft=snapshot();
+ localStorage.setItem('nira-pixel-editor-draft-'+pageKey,JSON.stringify(draft));
+ const current=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});
+ const data=await current.json();if(!current.ok)throw new Error(data.error||'Could not load saved page');
+ const page=(data.pages||data).find(p=>p.page_key===pageKey||p.pageKey===pageKey)||{};
+ const content=page.draft_content||page.draftContent||page.published_content||page.publishedContent||{};
+ Object.assign(content,{brand,pageTitle:$('page-title').textContent,canvasHtml:$('canvas').innerHTML,canvasBackground:$('canvas').style.background||getComputedStyle($('canvas')).backgroundColor,heroHeadline:$('headline')?.innerHTML||'',heroCopy:$('subcopy')?.innerText||'',heroImage:$('photo')?.src||'',heroKicker:$('kicker')?.textContent||'',caption:$('caption')?.textContent||'',canvasPages,activePage,updatedAt:new Date().toISOString()});
+ const response=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey,title:content.pageTitle||page.title||pageKey,content,action:'draft'})});
+ const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Server draft save failed');
+ toast('Canvas draft saved for '+(pageKey==='home'?'Main homepage':pageKey==='pixel-studios'?'Pixel Studios':'Nira Editorial')+'. It will appear publicly only after publishing.');
+}
+async function loadCanvasDraft(){
+ try{
+  const path=$('preview-page')?.value|| (brand==='nira'?'/nira-editorial/':'/pixel-studios/');
+  const pageKey=pageKeyForPath(path);
+  const response=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load canvas draft');
+  const page=(data.pages||data).find(p=>p.page_key===pageKey||p.pageKey===pageKey);
+  const content=page?.draft_content||page?.draftContent||page?.published_content||page?.publishedContent||{};
+  if(Array.isArray(content.canvasPages)&&content.canvasPages.length){
+   canvasPages=content.canvasPages;activePage=Math.max(0,Math.min(Number(content.activePage)||0,canvasPages.length-1));
+   const saved=canvasPages[activePage];$('canvas').innerHTML=saved.html;$('canvas').style.background=saved.bg||content.canvasBackground||'#fbf6f8';
+   $('page-title').textContent=saved.title||content.pageTitle||'Canvas design';rebindCanvas();
+  }else if(typeof content.canvasHtml==='string'&&content.canvasHtml){
+   $('canvas').innerHTML=content.canvasHtml;$('canvas').style.background=content.canvasBackground||'#fbf6f8';
+   $('page-title').textContent=content.pageTitle||'Canvas design';canvasPages=[{html:content.canvasHtml,bg:$('canvas').style.background,title:$('page-title').textContent}];activePage=0;rebindCanvas();
+  }
+  toast('Saved canvas loaded for '+(pageKey==='home'?'Main homepage':pageKey==='pixel-studios'?'Pixel Studios':'Nira Editorial')+'.');
+ }catch(error){console.warn('Canvas draft load failed',error);toast('Could not load saved canvas. Please check your sign-in and try again.');}
+}
+$('save').addEventListener('click',async()=>{const button=$('save');button.disabled=true;button.textContent='Saving…';try{await saveCanvasDraft();}catch(e){console.error(e);toast('Save failed: '+(e.message||'Please sign in again.'));}finally{button.disabled=false;button.textContent='Save draft';}});
 $('reset').addEventListener('click',()=>{if(!confirm('Reset this canvas to its starter layout?'))return;location.reload()});
 $('preview').addEventListener('click',()=>{document.querySelectorAll('.selected').forEach(x=>x.classList.remove('selected'));toast('Preview mode — draft remains local to this browser.');});
 selectEl('headline');
@@ -583,6 +616,8 @@ document.querySelectorAll('[data-workview]').forEach(b=>b.addEventListener('clic
 }));
 openPanel('websitecontent');
 showCanvasEditor();
+loadCanvasDraft();
+$('preview-page').addEventListener('change',()=>{if(workView==='canvas')loadCanvasDraft();});
 </script><style id="admin-auth-gate">body{visibility:hidden}</style><script>
 (async()=>{try{const r=await fetch('/api/admin/me',{credentials:'same-origin',cache:'no-store'});if(!r.ok){location.replace('/admin/');return;}document.body.style.visibility='visible';}catch(e){location.replace('/admin/');}})();
 </script>
