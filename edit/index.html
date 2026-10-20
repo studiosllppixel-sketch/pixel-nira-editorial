@@ -326,7 +326,13 @@ function applyEditToDocument(doc,edit){
  if(edit.image){
   let img=null;
   if(el.matches('img')){img=el;img.src=edit.image;}
-  else{img=el.querySelector('img');if(img)img.src=edit.image;else{el.style.backgroundImage='url("'+edit.image.replace(/["\\]/g,'')+'")';el.style.backgroundSize=edit.imageFit||'cover';el.style.backgroundPosition=edit.imagePosition||'center center';}}
+  else{
+   // Broad container edits must not replace a more specific child-image edit.
+   if(el.querySelector('img'))return;
+   el.style.backgroundImage='url("'+edit.image.replace(/["\\]/g,'')+'")';
+   el.style.backgroundSize=edit.imageFit||'cover';
+   el.style.backgroundPosition=edit.imagePosition||'center center';
+  }
   if(img){
    img.style.maxWidth='100%';
    if(edit.imageWidth)img.style.width=Math.max(1,Math.min(100,Number(edit.imageWidth)))+'%';
