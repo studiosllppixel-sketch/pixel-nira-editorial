@@ -294,6 +294,7 @@ function showWebsitePreview(){
  openPanel('websitecontent');
  $('page-title').textContent='Actual website preview';$('workspace-help').textContent='Choose a website page and section to preview the real page, not the design canvas.';
  loadWebsiteSection();
+ document.body.classList.add('element-selected');
 }
 function showCanvasEditor(){
  document.body.classList.remove('website-mode');
