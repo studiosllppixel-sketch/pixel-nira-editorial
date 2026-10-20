@@ -69,7 +69,21 @@ try{
 <script id="published-website-edits">
 (async()=>{try{
  const r=await fetch('/api/site-content?pageKey=home',{cache:'no-store'});if(!r.ok)return;
- const data=await r.json();const edits=data?.content?.websiteEdits;if(!Array.isArray(edits))return;
+ const data=await r.json();
+ const canvasSection=data?.content?.canvasSection;
+ if(canvasSection&&typeof canvasSection.html==='string'){
+  try{
+   const parsed=new DOMParser().parseFromString(canvasSection.html,'text/html');
+   const section=parsed.body.firstElementChild;
+   if(section){
+    section.dataset.publishedCanvasSection='1';
+    const hero=document.querySelector('.hero, .hero-section, main section:first-of-type');
+    if(canvasSection.position==='before'&&hero)hero.parentNode.insertBefore(section,hero);
+    else if(hero&&hero.parentNode)hero.parentNode.insertBefore(section,hero.nextSibling);
+    else (document.querySelector('main')||document.body).appendChild(section);
+   }
+  }catch(e){}
+ }const edits=data?.content?.websiteEdits;if(!Array.isArray(edits))return;
  for(const item of edits){try{
   const el=document.querySelector(item.selector);if(!el)continue;
   if(typeof item.html==='string'&&el.matches('h1,h2,h3'))el.innerHTML=item.html;
