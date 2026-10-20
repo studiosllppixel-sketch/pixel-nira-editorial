@@ -592,7 +592,7 @@ function loadWebsiteSection(){
      const key=pageKeyForPath(page);
      const record=(data.pages||data).find?.(p=>p.page_key===key||p.pageKey===key);
      const content=record?.draft_content||record?.draftContent||record?.published_content||record?.publishedContent||{};
-     if(content.canvasSection)placeCanvasSectionInPreview(content.canvasSection);
+     if(content.canvasSection){placeCanvasSectionInPreview(content.canvasSection,key);websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));}
     }).catch(()=>{});
    }
    const targets={header:doc.querySelector('header'),hero:doc.querySelector('.hero, .hero-section, main section:first-of-type'),stories:doc.querySelector('#stories, .stories, main section:nth-of-type(2), main'),footer:doc.querySelector('footer')};
@@ -638,10 +638,14 @@ function exportCanvasSection(){
  wrapper.innerHTML=clone.innerHTML;
  return {title:canvasPages[activePage]?.title||'Canvas design',html:wrapper.outerHTML,background:bg,position:$('canvas-section-position').value||'after',aspectRatio:device==='mobile'?'9/16':device==='tablet'?'3/4':'16/10'};
 }
-function placeCanvasSectionInPreview(section){
+function namespaceCanvasSectionIds(root,pageKey){
+ const prefix='published-canvas-'+String(pageKey||'home').replace(/[^a-z0-9_-]/gi,'-')+'-';
+ root.querySelectorAll('[id]').forEach(el=>{if(!el.id.startsWith(prefix))el.id=prefix+el.id;});
+}
+function placeCanvasSectionInPreview(section,pageKey){
  const doc=$('website-preview-frame').contentDocument;if(!doc||!section)return;
  doc.querySelectorAll('[data-editor-canvas-section]').forEach(el=>el.remove());
- const node=doc.createElement('div');node.dataset.editorCanvasSection='1';node.innerHTML=section.html;
+ const node=doc.createElement('div');node.dataset.editorCanvasSection='1';node.innerHTML=section.html;namespaceCanvasSectionIds(node,pageKey);
  const hero=doc.querySelector('.hero, .hero-section, main section:first-of-type');
  if(section.position==='before'&&hero)hero.parentNode.insertBefore(node,hero);
  else if(hero&&hero.parentNode)hero.parentNode.insertBefore(node,hero.nextSibling);
@@ -659,7 +663,7 @@ $('apply-canvas-home').addEventListener('click',async()=>{
   content.canvasSection=exportCanvasSection();
   const saved=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey:key,title:page.title||pageLabel,content,action:'draft'})});
   const result=await saved.json().catch(()=>({}));if(!saved.ok)throw new Error(result.error||'Could not save canvas section');
-  placeCanvasSectionInPreview(content.canvasSection);
+  placeCanvasSectionInPreview(content.canvasSection,key);
   websiteStatus('This canvas is now the homepage section for '+pageLabel+'. It replaces that page’s previous canvas section; your other saved canvases stay separate. Publish changes when ready.');
   toast('Homepage canvas section updated.');
  }catch(error){console.error(error);websiteStatus('Could not add canvas section: '+error.message);toast('Could not add canvas section: '+error.message);}
@@ -674,7 +678,7 @@ async function moveCanvasSection(direction){
   content.canvasSection.position=direction;
   const saved=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey:key,title:page.title||key,content,action:'draft'})});
   const result=await saved.json().catch(()=>({}));if(!saved.ok)throw new Error(result.error||'Could not reorder canvas');
-  $('canvas-section-position').value=direction;placeCanvasSectionInPreview(content.canvasSection);
+  $('canvas-section-position').value=direction;placeCanvasSectionInPreview(content.canvasSection,key);
   websiteStatus('Canvas section moved '+(direction==='before'?'before':'after')+' the hero. Save as draft is complete.');
  }catch(error){websiteStatus('Could not move section: '+error.message)}
 }
