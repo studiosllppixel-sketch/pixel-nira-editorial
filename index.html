@@ -85,7 +85,7 @@ try{
     else (document.querySelector('main')||document.body).appendChild(section);
    }
   }catch(e){}
- }const edits=data?.content?.websiteEdits;if(!Array.isArray(edits))return;
+ }const edits=Array.isArray(data?.content?.websiteEdits)?data.content.websiteEdits:[];
  for(const item of edits){try{
   const el=document.querySelector(item.selector);if(!el)continue;
   if(typeof item.html==='string'&&el.matches('h1,h2,h3'))el.innerHTML=item.html;
@@ -105,6 +105,26 @@ try{
    if(img&&Number(item.imageWidth)>0)img.style.width=item.imageWidth+'%';
   }
  }catch(e){}}
+ // If the canvas repeats the edited hero copy, merge its image into the hero and remove the duplicate section.
+ const publishedCanvas=document.querySelector('[data-published-canvas-section]');
+ const homeHero=document.querySelector('.hero, .hero-section, main section:first-of-type');
+ if(publishedCanvas&&homeHero){
+  const canvasHeading=publishedCanvas.querySelector('[id$="-headline"]');
+  const canvasCopy=publishedCanvas.querySelector('[id$="-subcopy"]');
+  const heroHeading=homeHero.querySelector('h1');
+  const heroCopy=homeHero.querySelector('p');
+  const cleanText=value=>(value||'').replace(/\\s+/g,' ').trim().toLowerCase();
+  if(canvasHeading&&canvasCopy&&heroHeading&&heroCopy&&cleanText(canvasHeading.innerText)===cleanText(heroHeading.innerText)&&cleanText(canvasCopy.innerText)===cleanText(heroCopy.innerText)){
+   const canvasPhoto=publishedCanvas.querySelector('img');
+   const heroPhoto=homeHero.querySelector('img');
+   if(canvasPhoto&&heroPhoto){
+    heroPhoto.src=canvasPhoto.src;
+    if(canvasPhoto.style.objectFit)heroPhoto.style.objectFit=canvasPhoto.style.objectFit;
+    if(canvasPhoto.style.objectPosition)heroPhoto.style.objectPosition=canvasPhoto.style.objectPosition;
+   }
+   publishedCanvas.remove();
+  }
+ }
 }catch(e){}finally{document.documentElement.classList.remove('published-content-loading');}})();
 </script>
 </body>
