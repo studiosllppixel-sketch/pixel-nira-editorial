@@ -354,7 +354,10 @@ function attachWebsiteSelection(){
   ev.preventDefault();ev.stopPropagation();
   if(selectedWebsiteElement)selectedWebsiteElement.style.outline=selectedWebsiteElement.dataset.editorOldOutline||'';
   selectedWebsiteElement=el;el.dataset.editorOldOutline=el.style.outline||'';el.style.outline='2px solid #a34782';
-  const selector=websiteSelector(el);$('website-edit-selector').value=selector;
+  // When an image is inside a clickable figure/card, target the actual image node
+  // so replacing it edits the image rather than the surrounding container.
+  const imageTarget=el.matches('img')?el:null;
+  const selector=websiteSelector(imageTarget||el);$('website-edit-selector').value=selector;
   $('website-edit-text').value=(el.matches('h1,h2,h3,p,span,button')&&el.children.length===0&&!el.matches('img'))?(el.innerText||el.textContent||'').trim():'';
   const selectedImg=el.matches('img')?el:el.querySelector('img');
   $('website-edit-image').value=selectedImg?.src||'';
@@ -373,6 +376,11 @@ function buildWebsiteFormEdit(selector){
  const edit={selector,text:$('website-edit-text').value,image:$('website-edit-image').value.trim(),imageWidth:$('website-image-width').value,imageHeight:$('website-image-height').value,imageFit:$('website-image-fit').value,imagePosition:$('website-image-position').value};
  const target=selectedWebsiteElement;
  if(target&&target.matches('h1,h2,h3,p,span,button')&&target.children.length===0&&!target.matches('img'))edit.text=$('website-edit-text').value;
+ // Keep image replacement scoped to the selected image, never the whole card/section.
+ if(target&&!target.matches('img')&&target.querySelector('img')&&edit.image){
+  const img=target.querySelector('img');
+  edit.selector=websiteSelector(img);
+ }
  if($('website-edit-color').value!==websiteInitialColor)edit.color=$('website-edit-color').value;
  if($('website-edit-bg').value!==websiteInitialBg)edit.background=$('website-edit-bg').value;
  return edit;
