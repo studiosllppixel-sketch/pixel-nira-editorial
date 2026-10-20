@@ -113,7 +113,7 @@ try{
   const canvasCopy=publishedCanvas.querySelector('[id$="-subcopy"]');
   const heroHeading=homeHero.querySelector('h1');
   const heroCopy=homeHero.querySelector('p');
-  const cleanText=value=>(value||'').replace(/\\s+/g,' ').trim().toLowerCase();
+  const cleanText=value=>(value||'').replace(/\s+/g,' ').trim().toLowerCase();
   if(canvasHeading&&canvasCopy&&heroHeading&&heroCopy&&cleanText(canvasHeading.innerText)===cleanText(heroHeading.innerText)&&cleanText(canvasCopy.innerText)===cleanText(heroCopy.innerText)){
    const canvasPhoto=publishedCanvas.querySelector('img');
    const heroPhoto=homeHero.querySelector('img');
