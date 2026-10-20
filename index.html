@@ -78,9 +78,10 @@ try{
   if(item.fontSize)el.style.fontSize=Math.max(8,Math.min(160,Number(item.fontSize)))+'px';
   if(item.fontFamily)el.style.fontFamily=item.fontFamily;
   if(item.image){
-   const img=el.matches('img')?el:el.querySelector('img');
+   const img=el.matches('img')?el:null;
+   // Broad section edits must not overwrite a more specific child-image edit.
    if(img)img.src=item.image;
-   else {el.style.backgroundImage='url("'+String(item.image).replace(/["\\\\]/g,'')+'")';el.style.backgroundSize=item.imageFit||'cover';el.style.backgroundPosition=item.imagePosition||'center center';}
+   else if(!el.querySelector('img')){el.style.backgroundImage='url("'+String(item.image).replace(/["\\]/g,'')+'")';el.style.backgroundSize=item.imageFit||'cover';el.style.backgroundPosition=item.imagePosition||'center center';}
    if(img&&item.imageFit)img.style.objectFit=item.imageFit;
    if(img&&item.imagePosition)img.style.objectPosition=item.imagePosition;
    if(img&&Number(item.imageHeight)>0)img.style.height=item.imageHeight+'px';
