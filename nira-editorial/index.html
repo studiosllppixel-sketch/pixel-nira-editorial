@@ -26,6 +26,8 @@ try{
    const section=parsed.body.firstElementChild;
    if(section){
     section.dataset.publishedCanvasSection='1';
+    const canvasIdPrefix='published-canvas-nira-editorial-';
+    section.querySelectorAll('[id]').forEach(el=>{if(!el.id.startsWith(canvasIdPrefix))el.id='published-canvas-nira-editorial-'+el.id;});
     const hero=document.querySelector('.hero, .hero-section, main section:first-of-type');
     if(canvasSection.position==='before'&&hero)hero.parentNode.insertBefore(section,hero);
     else if(hero&&hero.parentNode)hero.parentNode.insertBefore(section,hero.nextSibling);
