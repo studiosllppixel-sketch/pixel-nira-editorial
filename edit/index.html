@@ -292,7 +292,7 @@ function showWebsitePreview(){
  document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
  $('canvas-wrap').style.display='none';$('canvas-actions').style.display='none';$('website-preview-wrap').style.display='block';$('website-preview-controls').style.display='flex';$('devicebar').style.display='flex';
  openPanel('websitecontent');
- $('.status').textContent='WEBSITE EDITOR · SAVE A DRAFT OR PUBLISH WHEN READY';$('page-title').textContent='Website editor';$('workspace-help').textContent='Choose a page, click an item to edit it, then save a draft or publish.';
+ document.querySelector('.status').textContent='WEBSITE EDITOR · SAVE A DRAFT OR PUBLISH WHEN READY';$('page-title').textContent='Website editor';$('workspace-help').textContent='Choose a page, click an item to edit it, then save a draft or publish.';
  loadWebsiteSection();
 }
 function showCanvasEditor(){
@@ -300,7 +300,7 @@ function showCanvasEditor(){
  workView='canvas';
  document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
  $('canvas-wrap').style.display='flex';$('canvas-actions').style.display='flex';$('website-preview-wrap').style.display='none';$('website-preview-controls').style.display='none';$('devicebar').style.display='flex';
- $('.status').textContent='CANVAS DESIGN · SAVE A DRAFT TO KEEP CHANGES';$('page-title').textContent=canvasPages[activePage]?.title||'Canvas editor';$('workspace-help').textContent='Design the canvas here. Open Advanced controls for layers, type, colour, and layout.';
+ document.querySelector('.status').textContent='CANVAS DESIGN · SAVE A DRAFT TO KEEP CHANGES';$('page-title').textContent=canvasPages[activePage]?.title||'Canvas editor';$('workspace-help').textContent='Design the canvas here. Open Advanced controls for layers, type, colour, and layout.';
 }
 let websiteEdits=[];
 let selectedWebsiteElement=null,websiteInitialColor='#171116',websiteInitialBg='#fbf6f8';
@@ -501,14 +501,14 @@ function showWebsitePreview(){
  workView='website';
  document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
  $('canvas-wrap').style.display='none';$('canvas-actions').style.display='none';$('website-preview-wrap').style.display='block';$('website-preview-controls').style.display='flex';$('devicebar').style.display='none';
- $('.status').textContent='WEBSITE EDITOR · SAVE A DRAFT OR PUBLISH WHEN READY';$('page-title').textContent='Website editor';$('workspace-help').textContent='Choose a page, click an item to edit it, then save a draft or publish.';
+ document.querySelector('.status').textContent='WEBSITE EDITOR · SAVE A DRAFT OR PUBLISH WHEN READY';$('page-title').textContent='Website editor';$('workspace-help').textContent='Choose a page, click an item to edit it, then save a draft or publish.';
  loadWebsiteSection();
 }
 function showCanvasEditor(){
  workView='canvas';
  document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
  $('canvas-wrap').style.display='flex';$('canvas-actions').style.display='flex';$('website-preview-wrap').style.display='none';$('website-preview-controls').style.display='none';$('devicebar').style.display='flex';
- $('.status').textContent='CANVAS DESIGN · SAVE A DRAFT TO KEEP CHANGES';$('page-title').textContent=canvasPages[activePage]?.title||'Canvas editor';$('workspace-help').textContent='Design the canvas here. Open Advanced controls for layers, type, colour, and layout.';
+ document.querySelector('.status').textContent='CANVAS DESIGN · SAVE A DRAFT TO KEEP CHANGES';$('page-title').textContent=canvasPages[activePage]?.title||'Canvas editor';$('workspace-help').textContent='Design the canvas here. Open Advanced controls for layers, type, colour, and layout.';
 }
 function loadWebsiteSection(){
  const frame=$('website-preview-frame'),page=$('preview-page').value,section=$('preview-section').value;
