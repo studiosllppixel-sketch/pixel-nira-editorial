@@ -38,7 +38,7 @@
 .model-privacy{grid-column:1/-1;color:#bfb0ba;font-size:10px;line-height:1.6;margin:0}
 .model-status{grid-column:1/-1;min-height:18px;color:#e8b9d1;font-size:11px;margin:0}
 @media(max-width:760px){.model-call{grid-template-columns:1fr;padding:20px;gap:22px}.model-form{grid-template-columns:1fr}.model-form label.full,.model-actions,.model-privacy,.model-status{grid-column:1}}
-</style>
+.newsletter-contact{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px}.newsletter-contact a{font-size:9px;letter-spacing:.13em;text-transform:uppercase;border-bottom:1px solid var(--ink);padding-bottom:7px}.newsletter-note{font-size:10px;line-height:1.5;color:var(--muted);margin:12px 0 0}</style>
 <script>document.documentElement.classList.add('published-content-loading');</script>
 </head>
 <body>
@@ -88,11 +88,11 @@
  </div>
 </section>
 
-<section class="newsletter" id="newsletter"><div><div class="eyebrow">A note from our world</div><h2>Good things<br>arrive <em>occasionally.</em></h2><p>Our latest stories, visual inspirations and new perspectives — thoughtfully sent, never too often.</p></div><div><form id="signup" class="signup"><input type="email" aria-label="Email address" placeholder="Your email address" required><button type="submit">Join the list ↗</button></form><div class="signup-status" id="signup-status" aria-live="polite"></div></div></section>
+<section class="newsletter" id="newsletter"><div><div class="eyebrow">Contact &amp; updates</div><h2>Good things<br>arrive <em>occasionally.</em></h2><p>Request studio updates, or contact Pixel Studios × Nira Editorial directly.</p></div><div><form id="signup" class="signup"><input type="email" name="email" autocomplete="email" aria-label="Email address" placeholder="Your email address" required><button type="submit">Request updates ↗</button></form><div class="signup-status" id="signup-status" aria-live="polite"></div><div class="newsletter-contact" aria-label="Contact the studio"><a href="mailto:niraeditorial@gmail.com">Email the studio ↗</a><a href="https://wa.me/917358570707" target="_blank" rel="noopener noreferrer">WhatsApp the studio ↗</a></div><p class="newsletter-note">Update requests open a prefilled email for you to review and send.</p></div></section>
 </main>
 <footer><div class="footer-top"><div class="footer-logo">Pixel Studios <em>×</em><br>Nira Editorial</div><div class="footer-links"><a href="#stories">The Edit</a><a href="#pixel">Pixel Studios</a><a href="#nira">Nira Editorial</a><a href="#upcomings">Upcomings</a><a href="#newsletter">Contact & Updates</a></div></div><div class="footer-bottom"><span>© 2026 Pixel Studios × Nira Editorial</span><span>Made with intention. Seen with feeling.</span></div></footer>
 <script>
-document.getElementById('signup').addEventListener('submit',function(e){e.preventDefault();document.getElementById('signup-status').textContent='Thank you for your interest. Newsletter sign-up will be connected soon.';this.reset();});
+const signup=document.getElementById('signup');if(signup)signup.addEventListener('submit',function(e){e.preventDefault();const email=this.querySelector('input[type=email]')?.value.trim();if(!email)return;const subject=encodeURIComponent('Please add me to Pixel Studios × Nira Editorial updates');const body=encodeURIComponent('Hello,\n\nPlease add this email address to your studio updates list: '+email+'\n\nThank you.');document.getElementById('signup-status').textContent='Your email app will open with the request. Review the message and press Send to complete it.';window.location.href='mailto:niraeditorial@gmail.com?subject='+subject+'&body='+body;});
 </script>
 
 <script>
