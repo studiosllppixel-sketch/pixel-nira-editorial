@@ -120,7 +120,8 @@ try{
   if(canvasHeading&&canvasCopy&&heroHeading&&heroCopy&&cleanText(canvasHeading.innerText)===cleanText(heroHeading.innerText)&&cleanText(canvasCopy.innerText)===cleanText(heroCopy.innerText)){
    const canvasPhoto=publishedCanvas.querySelector('img');
    const heroPhoto=homeHero.querySelector('img');
-   if(canvasPhoto&&heroPhoto){
+   const hasExplicitHeroPhoto=edits.some(item=>item.selector==='.hero-art img'&&typeof item.image==='string'&&item.image);
+   if(canvasPhoto&&heroPhoto&&!hasExplicitHeroPhoto){
     heroPhoto.src=canvasPhoto.src;
     if(canvasPhoto.style.objectFit)heroPhoto.style.objectFit=canvasPhoto.style.objectFit;
     if(canvasPhoto.style.objectPosition)heroPhoto.style.objectPosition=canvasPhoto.style.objectPosition;
