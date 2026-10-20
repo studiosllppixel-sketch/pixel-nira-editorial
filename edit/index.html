@@ -452,7 +452,7 @@ function loadWebsiteSection(){
 }
 document.querySelectorAll('[data-workview]').forEach(b=>b.addEventListener('click',()=>b.dataset.workview==='website'?showWebsitePreview():showCanvasEditor()));
 $('show-section').addEventListener('click',loadWebsiteSection);
-$('preview-page').addEventListener('change',loadWebsiteSection);
+$('preview-page').addEventListener('change',async()=>{const path=$('preview-page').value;if($('website-edit-page'))$('website-edit-page').value=path;websiteEdits=[];await loadWebsiteDraft();loadWebsiteSection();});
 $('preview-section').addEventListener('change',loadWebsiteSection);
 
 
