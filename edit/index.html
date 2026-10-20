@@ -436,20 +436,9 @@ function loadWebsiteSection(){
    const doc=frame.contentDocument;
    if(doc){
     doc.querySelectorAll('[data-editor-old-outline]').forEach(el=>el.style.outline=el.dataset.editorOldOutline||'');
-    // Canvas content belongs only to its matching brand page.
-    // Never mirror canvas changes into the homepage or the other brand.
-    const canvasPage=brand==='nira'?'/nira-editorial/':'/pixel-studios/';
-    const hero=page===canvasPage?doc.querySelector('.hero'):null;
-    if(hero){
-     const title=hero.querySelector('h1');
-     const copy=hero.querySelector('.hero-copy p, p');
-     const img=hero.querySelector('.hero-art img, .hero-img img, img');
-     const eyebrow=hero.querySelector('.eyebrow');
-     if(title&&$('headline'))title.innerHTML=$('headline').innerHTML;
-     if(copy&&$('subcopy'))copy.textContent=$('subcopy').innerText;
-     if(img&&$('photo')?.src)img.src=$('photo').src;
-     if(eyebrow&&$('kicker'))eyebrow.textContent=$('kicker').textContent;
-    }
+    // Preview the real selected website page at its natural responsive width.
+    // Only saved websiteEdits are applied here; unsaved canvas mockup content must not
+    // overwrite the page or make its preview differ from the published website.
     websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));
     attachWebsiteSelection();
    }
