@@ -775,11 +775,15 @@ document.querySelectorAll('[data-add-canvas-target]').forEach(button=>button.add
   content.canvasSection=exportCanvasSection();
   const saved=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey:key,title:page.title||pageLabel,content,action:'draft'})});
   const result=await saved.json().catch(()=>({}));if(!saved.ok)throw new Error(result.error||'Could not save canvas section');
-  if(({'/':'home','/pixel-studios/':'pixel-studios','/nira-editorial/':'nira-editorial'})[$('preview-page')?.value||'/']===key){
-   placeCanvasSectionInPreview(content.canvasSection,key);
-  }
-  websiteStatus('Canvas section saved to '+pageLabel+' draft. It replaces only that page’s previous canvas section. Publish that page when ready.');
-  toast('Canvas added to '+pageLabel+' draft.');
+  // Open the destination page immediately so the user can verify the saved draft section.
+  const destinationPath=key==='home'?'/':key==='pixel-studios'?'/pixel-studios/':'/nira-editorial/';
+  $('preview-page').value=destinationPath;
+  if($('website-edit-page'))$('website-edit-page').value=destinationPath;
+  websiteEdits=[];galleryThemes=[];galleryAddTargetTheme=null;
+  await loadWebsiteDraft();
+  showWebsitePreview();
+  websiteStatus('Canvas section saved to '+pageLabel+' draft and loaded in its preview. Publish changes separately when ready.');
+  toast('Canvas saved to '+pageLabel+' draft; preview opened.');
  }catch(error){console.error(error);websiteStatus('Could not add canvas to '+pageLabel+': '+error.message);toast('Could not add canvas: '+error.message);}
  finally{document.querySelectorAll('[data-add-canvas-target]').forEach(b=>b.disabled=false);button.textContent=originalText;}
 }));
