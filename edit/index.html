@@ -695,7 +695,10 @@ function loadWebsiteSection(){
      const content=record?.draft_content||record?.draftContent||record?.published_content||record?.publishedContent||{};
      if(content.canvasSection){placeCanvasSectionInPreview(content.canvasSection,key);websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));}
      if(isGalleryPageKey(key))renderGalleryThemesInDocument(doc,galleryThemes);
-    }).catch(()=>{});
+    }).catch(()=>{}).finally(()=>{
+     // Keep built-in placeholder/stock photos hidden until the saved page draft is applied.
+     try{doc.documentElement.classList.remove('published-content-loading');}catch(e){}
+    });
    }
    const targets={header:doc.querySelector('header'),hero:doc.querySelector('.hero, .hero-section, main section:first-of-type'),stories:doc.querySelector('#stories, .stories, main section:nth-of-type(2), main'),footer:doc.querySelector('footer')};
    if(section!=='whole'){const target=targets[section];if(target){target.scrollIntoView({block:'start'});target.style.outline='2px solid #a34782';target.style.outlineOffset='-2px';}}
