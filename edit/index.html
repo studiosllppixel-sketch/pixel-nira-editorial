@@ -615,13 +615,6 @@ async function saveWebsiteDraft(){
   websiteStatus('Draft saved successfully. Your public website has not been published.');toast('Draft saved successfully.');
  }catch(e){console.error(e);websiteStatus('Save failed: '+e.message);}
 }
-function showWebsitePreview(){
- workView='website';
- document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
- $('canvas-wrap').style.display='none';$('canvas-actions').style.display='none';$('website-preview-wrap').style.display='block';$('website-preview-controls').style.display='flex';$('devicebar').style.display='none';
- document.querySelector('.status').textContent='WEBSITE EDITOR · SAVE A DRAFT OR PUBLISH WHEN READY';$('page-title').textContent='Website editor';$('workspace-help').textContent='Choose a page, click an item to edit it, then save a draft or publish.';
- loadWebsiteSection();
-}
 function showCanvasEditor(){
  workView='canvas';
  document.querySelectorAll('[data-workview]').forEach(b=>b.classList.toggle('active',b.dataset.workview===workView));
