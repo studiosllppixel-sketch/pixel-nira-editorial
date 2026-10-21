@@ -692,23 +692,6 @@ function namespaceCanvasSectionIds(root,pageKey){
  const prefix='published-canvas-'+String(pageKey||'home').replace(/[^a-z0-9_-]/gi,'-')+'-';
  root.querySelectorAll('[id]').forEach(el=>{if(!el.id.startsWith(prefix))el.id=prefix+el.id;});
 }
-function collapseDuplicateCanvasIntoHero(doc,canvasSection){
- const hero=doc.querySelector('.hero, .hero-section, main section:first-of-type');
- if(!hero||!canvasSection)return;
- const canvasHeading=canvasSection.querySelector('[id$="-headline"]');
- const canvasCopy=canvasSection.querySelector('[id$="-subcopy"]');
- const heroHeading=hero.querySelector('h1');
- const heroCopy=hero.querySelector('p');
- const cleanText=value=>(value||'').replace(/\s+/g,' ').trim().toLowerCase();
- if(!canvasHeading||!canvasCopy||!heroHeading||!heroCopy||cleanText(canvasHeading.innerText)!==cleanText(heroHeading.innerText)||cleanText(canvasCopy.innerText)!==cleanText(heroCopy.innerText))return;
- const canvasPhoto=canvasSection.querySelector('img'),heroPhoto=hero.querySelector('img');
- if(canvasPhoto&&heroPhoto){
-  heroPhoto.src=canvasPhoto.src;
-  if(canvasPhoto.style.objectFit)heroPhoto.style.objectFit=canvasPhoto.style.objectFit;
-  if(canvasPhoto.style.objectPosition)heroPhoto.style.objectPosition=canvasPhoto.style.objectPosition;
- }
- canvasSection.remove();
-}
 function placeCanvasSectionInPreview(section,pageKey){
  const doc=$('website-preview-frame').contentDocument;if(!doc||!section)return;
  // Replace the published canvas in the editor iframe with its draft version.
@@ -719,7 +702,7 @@ function placeCanvasSectionInPreview(section,pageKey){
  if(section.position==='before'&&hero)hero.parentNode.insertBefore(node,hero);
  else if(hero&&hero.parentNode)hero.parentNode.insertBefore(node,hero.nextSibling);
  else (doc.querySelector('main')||doc.body).appendChild(node);
- collapseDuplicateCanvasIntoHero(doc,node);
+ // Keep every added canvas as its own section; never merge it into the hero.
 }
 $('apply-canvas-home').addEventListener('click',async()=>{
  const button=$('apply-canvas-home'),selectedPath=$('preview-page')?.value||'/';
