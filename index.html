@@ -163,7 +163,7 @@ try{
    if(img&&Number(item.imageWidth)>0)img.style.width=item.imageWidth+'%';
   }
  }catch(e){}}
- }catch(e){}finally{document.documentElement.classList.remove('published-content-loading');}})();
+ }catch(e){}finally{if(!new URLSearchParams(location.search).has('editorPreview'))document.documentElement.classList.remove('published-content-loading');}})();
 </script>
 <script id="site-motion">
 (()=>{try{
