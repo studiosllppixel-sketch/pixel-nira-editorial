@@ -161,6 +161,20 @@ function openMediaViewer(asset,url){
 }
 function useMediaAsset(asset){
  const url='/api/media/file?pathname='+encodeURIComponent(asset.object_key);
+ // Keep website-element image selection separate from the canvas-design editor.
+ if(workView==='website'){
+  const selector=$('website-edit-selector')?.value.trim();
+  if(!selectedWebsiteElement||!selector){
+   websiteStatus('Select an element in the website preview first, then choose an image.');
+   toast('Select a website element before choosing an image.');
+   return;
+  }
+  $('website-edit-image').value=url;
+  const picker=$('website-media-picker');if(picker)picker.style.display='none';
+  previewWebsiteFormLive();
+  websiteStatus('Image applied to the selected website element preview. Save draft to keep this change; publish only when ready.');
+  return;
+ }
  const target=selected&&els[selected]&&els[selected].tagName?.toLowerCase()==='img'?els[selected]:$('photo');
  target.src=url;target.style.display='';if(target.id==='photo')selectEl('photo');else selectEl(target.id);
  toast('Image selected for the canvas. Save draft to keep the change.');
