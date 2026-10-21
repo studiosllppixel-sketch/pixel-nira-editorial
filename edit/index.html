@@ -704,7 +704,7 @@ function loadWebsiteSection(){
  };
  frame.src=page+(page.includes('?')?'&':'?')+'editorPreview=1&section='+encodeURIComponent(section)+'&t='+Date.now();
 }
-document.querySelectorAll('[data-workview]').forEach(b=>b.addEventListener('click',()=>b.dataset.workview==='website'?showWebsitePreview():showCanvasEditor()));
+// Workspace switching is registered once, near the end of this file.
 $('show-section').addEventListener('click',loadWebsiteSection);
 $('website-save-draft-toolbar').addEventListener('click',()=> $('website-save-draft').click());
 $('website-publish-toolbar').addEventListener('click',()=> $('website-publish').click());
@@ -791,14 +791,21 @@ $('canvas-section-up').addEventListener('click',()=>moveCanvasSection('before'))
 $('canvas-section-down').addEventListener('click',()=>moveCanvasSection('after'));
 // Simplified editor workflow: website first, advanced controls on demand.
 $('more-tools').addEventListener('click',()=>{const tools=$('advanced-tools');const open=tools.style.display==='none';tools.style.display=open?'block':'none';$('more-tools').textContent=open?'Hide advanced controls −':'Advanced controls +';});
-document.querySelectorAll('[data-workview]').forEach(b=>b.addEventListener('click',()=>{
+// One explicit workspace switch handler prevents duplicate actions and stale views.
+document.querySelectorAll('[data-workview]').forEach(b=>b.addEventListener('click',async()=>{
  const isWebsite=b.dataset.workview==='website';
  document.body.classList.toggle('website-mode',isWebsite);
- if(isWebsite)showWebsitePreview();else showCanvasEditor();
+ if(isWebsite){
+  showWebsitePreview();
+ }else{
+  showCanvasEditor();
+  await loadCanvasDraft();
+ }
 }));
 openPanel('websitecontent');
-showCanvasEditor();
-loadCanvasDraft();
+// Start in the Website Editor because the sidebar and page selector are the site-management entry point.
+// Canvas data is loaded only when Canvas Studio is explicitly opened.
+showWebsitePreview();
 $('preview-page').addEventListener('change',()=>{if(workView==='canvas')loadCanvasDraft();});
 </script><style id="admin-auth-gate">body{visibility:hidden}</style><script>
 (async()=>{try{const r=await fetch('/api/admin/me',{credentials:'same-origin',cache:'no-store'});if(!r.ok){location.replace('/admin/');return;}document.body.style.visibility='visible';}catch(e){location.replace('/admin/');}})();
