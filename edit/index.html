@@ -17,6 +17,9 @@ body.website-mode.element-selected #website-selection-summary{margin-top:8px}
 body.website-mode #website-preview-controls label{font-size:12px}
 @media(max-width:700px){body.website-mode .workspace{padding:8px!important}body.website-mode #website-preview-wrap{height:calc(100vh - 210px);min-height:400px}body.website-mode #website-preview-frame{min-height:400px!important}body.website-mode.element-selected #side-panel{left:8px;top:74px;width:min(320px,calc(100vw - 16px));max-height:calc(100vh - 84px)}}
 
+
+/* Keep page-level actions in the main toolbar; hide duplicate actions in the element inspector. */
+body.website-mode #side-panel #website-save-draft,body.website-mode #side-panel #website-publish,body.website-mode #side-panel #website-edit-page{display:none!important}
 /* Element controls live beside the preview, never on top of the website. */
 body.website-mode.element-selected .app{grid-template-columns:minmax(0,1fr) 340px!important;align-items:start}
 body.website-mode.element-selected .sidebar{display:block!important;grid-column:2;grid-row:1;position:static!important;width:auto!important;height:auto!important;padding:14px!important;border-left:1px solid var(--line);border-right:0;overflow:visible}
