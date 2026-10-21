@@ -754,7 +754,7 @@ function placeCanvasSectionInPreview(section,pageKey){
  const doc=$('website-preview-frame').contentDocument;if(!doc||!section)return;
  // Replace the published canvas in the editor iframe with its draft version.
  // Otherwise the same canvas is rendered twice with matching IDs, so selection hits the first copy.
- doc.querySelectorAll('[data-published-canvas-section],[data-editor-canvas-section]').forEach(el=>el.remove());
+ doc.querySelectorAll('[data-published-canvas-section],[data-editor-canvas-section],.published-canvas-section').forEach(el=>el.remove());
  const node=doc.createElement('div');node.dataset.editorCanvasSection='1';node.innerHTML=section.html;namespaceCanvasSectionIds(node,pageKey);
  const hero=doc.querySelector('.hero, .hero-section, main section:first-of-type');
  if(section.position==='before'&&hero)hero.parentNode.insertBefore(node,hero);
