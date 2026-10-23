@@ -114,7 +114,7 @@ $('image-upload').addEventListener('change',async e=>{
   else toast('Uploaded '+uploaded+' of '+files.length+'. '+errors.slice(0,2).join(' '));
  }finally{e.target.value='';}
 });
-$('addtext').addEventListener('click',()=>{const el=document.createElement('div');el.contentEditable='true';el.textContent='New editorial text';el.style.cssText='position:absolute;left:8%;top:82%;font:italic 20px Playfair Display,serif;color:#87366e;cursor:move;z-index:3';el.id='added-'+Date.now();$('canvas').appendChild(el);els[el.id]=el;el.addEventListener('click',ev=>{ev.stopPropagation();selectEl(el.id)});selectEl(el.id);toast('Text element added.')});
+$('addtext').addEventListener('click',()=>{const el=document.createElement('div');el.contentEditable='true';el.textContent='New editorial text';el.style.cssText='position:absolute;left:8%;top:12%;max-width:84%;font:italic 20px Playfair Display,serif;color:#87366e;cursor:move;touch-action:none;z-index:3';el.id='added-text-'+Date.now();$('canvas').appendChild(el);els[el.id]=el;bindElement(el.id);selectEl(el.id);toast('Text added. Drag it to position it; tap again to edit.')});
 $('delete').addEventListener('click',()=>{if(selected&&els[selected]&&selected!=='headline'&&selected!=='subcopy'&&selected!=='kicker'){els[selected].remove();delete els[selected];selected='';$('selection-note').textContent='Selected: none';toast('Selected layer deleted.')}else if(selected==='photo'||selected==='caption'||selected==='kicker'){if(els[selected])els[selected].style.display='none';toast('Selected element hidden.')}else toast('Choose an added element or image to delete it.')});
 function snapshot(){saveActivePage();return {brand,device,activePage,canvasPages,canvasBackground:$('canvas').style.background,html:$('canvas').innerHTML,headline:$('headline')?.innerHTML||'',subcopy:$('subcopy')?.innerText||'',caption:$('caption')?.textContent||'',headlineColor:$('headline')?.style.color||'',headlineSize:$('headline')?.style.fontSize||'',imageWidth:$('photo')?.style.width||'',updatedAt:new Date().toISOString()}}
 async function saveCanvasDraft(){
@@ -288,13 +288,16 @@ function bindElement(id){
  e.addEventListener('pointermove',ev=>{
   if(!dragState||dragState.id!==id||($('lock-element').checked&&selected===id))return;
   const dx=ev.clientX-dragState.startX,dy=ev.clientY-dragState.startY;
+  // The built-in hero photo has crop-position controls; uploaded images move as layers.
   if(id==='photo'){
    const x=Math.max(0,Math.min(100,dragState.positionX-dx/Math.max(1,dragState.elementWidth)*100));
    const y=Math.max(0,Math.min(100,dragState.positionY-dy/Math.max(1,dragState.elementHeight)*100));
    e.style.objectPosition=x+'% '+y+'%';$('image-position-x').value=x;$('image-position-y').value=y;return;
   }
-  e.style.left=((dragState.left+dx)/dragState.canvasRect.width*100)+'%';
-  e.style.top=((dragState.top+dy)/dragState.canvasRect.height*100)+'%';
+  const x=Math.max(0,Math.min(100-dragState.elementWidth/dragState.canvasRect.width*100,(dragState.left+dx)/dragState.canvasRect.width*100));
+  const y=Math.max(0,Math.min(100-dragState.elementHeight/dragState.canvasRect.height*100,(dragState.top+dy)/dragState.canvasRect.height*100));
+  e.style.left=x+'%';
+  e.style.top=y+'%';
  });
  e.addEventListener('pointerup',()=>{if(dragState?.id===id){e.classList.remove('dragging');dragState=null}});
 }
