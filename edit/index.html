@@ -733,7 +733,7 @@ function loadWebsiteSection(){
      const key=pageKeyForPath(page);
      const record=(data.pages||data).find?.(p=>p.page_key===key||p.pageKey===key);
      const content=record?.draft_content||record?.draftContent||record?.published_content||record?.publishedContent||{};
-     if(content.canvasSection){placeCanvasSectionInPreview(content.canvasSection,key);websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));}
+     if(content.canvasSections?.length||content.canvasSection){placeAllCanvasSectionsInPreview(content,key);websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));}
      if(isGalleryPageKey(key))renderGalleryThemesInDocument(doc,galleryThemes);
     }).catch(()=>{}).finally(()=>{
      // Keep built-in placeholder/stock photos hidden until the saved page draft is applied.
@@ -841,8 +841,13 @@ document.querySelectorAll('[data-add-canvas-target]').forEach(button=>button.add
   let destinationIndex=destinationCanvases.findIndex(item=>item&&item.title===currentCanvas.title&&item.html===currentCanvas.html);
   if(destinationIndex<0){destinationCanvases.push(currentCanvas);destinationIndex=destinationCanvases.length-1;}
   const section=exportCanvasSection();
+  section.id='canvas-'+Date.now();
+  section.position=$('canvas-section-position').value||'after-hero';
+  section.insertAfter=$('canvas-insert-after')?.value||'hero';
   content.canvasPages=destinationCanvases;content.activePage=destinationIndex;
-  content.canvasHtml=currentCanvas.html;content.canvasBackground=currentCanvas.bg;content.canvasSection=section;
+  content.canvasHtml=currentCanvas.html;content.canvasBackground=currentCanvas.bg;
+  const sections=Array.isArray(content.canvasSections)?content.canvasSections.slice():(content.canvasSection?[content.canvasSection]:[]);
+  sections.push(section);content.canvasSections=sections;content.canvasSection=section;
   const saved=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey:key,title:page.title||pageLabel,content,action:'draft'})});
   const result=await saved.json().catch(()=>({}));if(!saved.ok)throw new Error(result.error||'Could not save canvas section');
   // Switch to the exact destination and wait for its iframe to load before inserting the saved section.
@@ -883,16 +888,22 @@ $('canvas-section-up').addEventListener('click',()=>moveCanvasSection('before'))
 $('canvas-section-down').addEventListener('click',()=>moveCanvasSection('after'));
 $('canvas-section-remove').addEventListener('click',async()=>{
  const path=$('preview-page')?.value||'/',key=pageKeyForPath(path),label=key==='home'?'Main homepage':key==='pixel-studios'?'Pixel Studios':'Nira Editorial';
- if(!confirm('Remove the canvas section from '+label+'? This will not delete the canvas from Canvas Studio.'))return;
+ const select=$('canvas-insert-after');const chosen=select?.value||'';
+ if(!confirm('Remove the selected canvas section from '+label+'? This will not delete its original canvas in Canvas Studio.'))return;
  try{
   const r=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'}),data=await r.json();if(!r.ok)throw new Error(data.error||'Could not load page');
   const page=(data.pages||data).find(p=>p.page_key===key||p.pageKey===key);if(!page)throw new Error('Page not found');
   const content=page.draft_content||page.draftContent||page.published_content||page.publishedContent||{};
-  delete content.canvasSection;content.canvasSections=[];
+  let sections=Array.isArray(content.canvasSections)?content.canvasSections.slice():(content.canvasSection?[content.canvasSection]:[]);
+  if(!sections.length)throw new Error('This page has no canvas sections to remove.');
+  let index=sections.findIndex((item,i)=>(item.id||item.canvasId||item.title||('canvas-'+(i+1)))===chosen);
+  if(index<0)index=sections.length-1;
+  sections.splice(index,1);content.canvasSections=sections;
+  if(sections.length)content.canvasSection=sections[sections.length-1];else delete content.canvasSection;
   const saved=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey:key,title:page.title||label,content,action:'draft'})});
   const result=await saved.json().catch(()=>({}));if(!saved.ok)throw new Error(result.error||'Could not remove canvas section');
-  const doc=$('website-preview-frame').contentDocument;if(doc)doc.querySelectorAll('[data-editor-canvas-section],.published-canvas-section').forEach(el=>el.remove());
-  websiteStatus('Canvas section removed from '+label+' draft. The Canvas Studio canvas is kept.');toast('Canvas section removed from page draft.');
+  const doc=$('website-preview-frame').contentDocument;if(doc)placeAllCanvasSectionsInPreview(content,key);
+  websiteStatus('Selected canvas section removed from '+label+' draft. Original canvas is kept.');toast('Canvas section removed from page draft.');
  }catch(e){websiteStatus('Could not remove canvas section: '+e.message);toast('Remove failed: '+e.message);}
 });
 // Simplified editor workflow: website first, advanced controls on demand.
