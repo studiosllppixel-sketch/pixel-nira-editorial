@@ -864,8 +864,8 @@ document.querySelectorAll('[data-add-canvas-target]').forEach(button=>button.add
   const verifyData=await verify.json();if(!verify.ok)throw new Error(verifyData.error||'Canvas saved, but the destination preview could not refresh');
   const verifiedPage=(verifyData.pages||verifyData).find(p=>p.page_key===key||p.pageKey===key);
   const verifiedContent=verifiedPage?.draft_content||verifiedPage?.draftContent||verifiedPage?.published_content||verifiedPage?.publishedContent||{};
-  if(!verifiedContent.canvasSection)throw new Error('The canvas was saved, but no canvas section was returned for '+pageLabel+'.');
-  placeCanvasSectionInPreview(verifiedContent.canvasSection,key);
+  if(!(verifiedContent.canvasSections?.length||verifiedContent.canvasSection))throw new Error('The canvas was saved, but no canvas section was returned for '+pageLabel+'.');
+  placeAllCanvasSectionsInPreview(verifiedContent,key);
   websiteStatus('Canvas saved to '+pageLabel+' draft and displayed in its preview. Publish separately when ready.');
   toast('Canvas added to '+pageLabel+' and shown in preview.');
  }catch(error){console.error(error);websiteStatus('Could not add canvas to '+pageLabel+': '+error.message);toast('Canvas/preview issue: '+error.message);}
