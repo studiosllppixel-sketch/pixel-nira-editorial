@@ -85,6 +85,123 @@ img{max-width:100%}
 }
 </style>
 <script>document.documentElement.classList.add('published-content-loading');</script>
+
+<style id="homepage-uiux-stage-two">
+/* Homepage-only polish: retain content, links, published edits and Canvas Studio. */
+:root{
+ --paper:#f4f0e8;--ink:#171717;--muted:#69645d;--line:#d9d2c7;
+ --rust:#7d263e;--olive:#666b51;--blush:#e7ded2;--plum:#292323;--magenta:#7d263e;
+}
+body{background:var(--paper);color:var(--ink)}
+.topline{background:#f4f0e8;color:#625d55;border-color:#d9d2c7}
+.masthead{background:#f4f0e8;border-color:#171717}
+.nav{background:#f4f0e8;border-color:#d9d2c7;gap:clamp(14px,2.5vw,30px)}
+.nav a{transition:color .2s ease}
+.nav a:focus-visible,.textlink:focus-visible,.brand-panel:focus-visible,.story a:focus-visible,.category-grid a:focus-visible{outline:2px solid #7d263e;outline-offset:4px}
+.hero{isolation:isolate;background:#171717}
+.hero-art img{transition:transform 1s cubic-bezier(.2,.7,.2,1),filter .6s ease}
+.hero:hover .hero-art img{transform:scale(1.018)}
+.hero .textlink{width:max-content;max-width:100%;border-bottom-color:#f4f0e8}
+.ticker{background:#171717;color:#f4f0e8;letter-spacing:.025em}
+.ticker span{color:#d9cbb9}
+.section{scroll-margin-top:20px}
+.section-head{margin-bottom:34px}
+.section-head h2{color:#171717}
+.story-image{background:#ded8ce}
+.story-image:after{content:"";position:absolute;inset:0;border:1px solid rgba(23,23,23,.06);pointer-events:none}
+.story-image img{transition:transform .8s cubic-bezier(.2,.7,.2,1),filter .5s ease;filter:saturate(.72)}
+.story:hover .story-image img,.story a:focus-visible .story-image img{transform:scale(1.035);filter:saturate(.92)}
+.story h3{transition:color .2s ease}
+.story a:hover h3{color:#7d263e}
+.story p{max-width:38ch}
+.category-explore{background:#171717;color:#f4f0e8}
+.category-explore .section-head h2{color:#f4f0e8}
+.category-grid{border-color:#49433e}
+.category-grid a{min-height:158px;transition:background .25s ease,padding .25s ease}
+.category-grid a:hover{background:#2a2926;padding-top:27px}
+.category-grid span{color:#d6c6b4}
+.category-grid i{color:#d6c6b4}
+.brand-panels{gap:20px}
+.brand-panel{background:#24211e}
+.brand-panel img{filter:saturate(.7);transition:transform .9s cubic-bezier(.2,.7,.2,1),filter .6s ease}
+.brand-panel:hover img,.brand-panel:focus-visible img{transform:scale(1.035);filter:saturate(.9)}
+.brand-panel:after{background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,.06) 85%)}
+.panel-content h2{letter-spacing:-.045em}
+.quote{background:#e9e2d7;color:#171717}
+.quote .mark{color:#7d263e}
+.quote small{color:#69645d}
+.upcomings{background:#171717;color:#f4f0e8}
+.upcomings .section-head h2{color:#f4f0e8}
+.model-call{border-color:#49433e}
+.newsletter{background:#f4f0e8}
+.newsletter h2{color:#171717}
+.signup{border-color:#171717}
+.signup input{color:#171717}
+.signup input:focus-visible{outline:2px solid #7d263e;outline-offset:5px}
+.signup button{padding:12px 2px;transition:color .2s ease}
+.signup button:hover{color:#7d263e}
+footer{background:#171717;color:#f4f0e8}
+.footer-top{border-color:#49433e}
+.footer-logo em{color:#d6c6b4}
+a,button{-webkit-tap-highlight-color:transparent}
+@media(min-width:761px){
+ .nav{position:relative;z-index:5}
+ .hero-copy{max-width:54%;padding-right:20px}
+ .hero h1{max-width:780px;text-wrap:balance}
+ .hero p{font-size:15px;max-width:36ch}
+ .stories{align-items:start;gap:clamp(14px,2vw,26px)}
+ .story-image img{height:clamp(300px,27vw,390px)}
+ .story:first-child .story-image img{height:clamp(370px,33vw,470px)}
+ .brand-panel{min-height:440px}
+}
+@media(max-width:760px){
+ .topline{gap:12px;line-height:1.5;letter-spacing:.11em}
+ .masthead{border-bottom:1px solid #171717}
+ .nav{gap:10px 18px;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;white-space:nowrap;padding:13px 5vw;scrollbar-width:none}
+ .nav::-webkit-scrollbar{display:none}
+ .hero{min-height:min(760px,88svh);min-height:max(590px,78svh);padding:34px 6vw 28px}
+ .hero-copy{padding-bottom:12px}
+ .hero h1{font-size:clamp(52px,13.5vw,82px);line-height:.91;max-width:11ch}
+ .hero p{font-size:14px;line-height:1.65;max-width:34ch}
+ .image-note{font-size:8px;max-width:calc(100% - 24px)}
+ .ticker{flex-wrap:wrap;gap:8px 12px;padding:14px 5vw;font-size:13px}
+ .section{padding:48px 5vw}
+ .section-head{gap:12px;margin-bottom:24px}
+ .section-head p{max-width:38ch}
+ .stories{gap:26px 14px}
+ .story-image img,.story:first-child .story-image img{height:clamp(190px,57vw,290px)}
+ .story h3{font-size:clamp(20px,5.5vw,25px);line-height:1.1}
+ .story p{font-size:11px}
+ .category-explore{padding:48px 5vw}
+ .category-grid a{min-height:120px;padding:16px}
+ .category-grid a:hover{padding-top:20px}
+ .brand-panels{gap:14px;padding:0 5vw 48px}
+ .brand-panel{min-height:340px}
+ .panel-content{left:20px;right:20px;bottom:20px}
+ .quote{padding:52px 7vw}
+ .upcomings.section{padding:48px 5vw}
+ .newsletter{padding:48px 5vw}
+ .signup{gap:8px}
+ .signup button{max-width:45%;text-align:right;line-height:1.5}
+ .footer-links{gap:14px}
+}
+@media(max-width:380px){
+ .wordmark img{height:48px}
+ .hero h1{font-size:clamp(48px,13vw,58px)}
+ .stories{grid-template-columns:1fr}
+ .story:first-child{grid-column:auto}
+ .story-image img,.story:first-child .story-image img{height:330px}
+ .category-grid{grid-template-columns:1fr 1fr}
+ .category-grid a{min-height:112px;padding:13px}
+ .brand-panel{min-height:310px}
+ .model-call{padding:18px}
+}
+@media(prefers-reduced-motion:reduce){
+ .hero-art img,.story-image img,.brand-panel img,.category-grid a,.story h3{transition:none!important}
+ .hero:hover .hero-art img,.story:hover .story-image img,.brand-panel:hover img{transform:none!important}
+}
+</style>
+
 </head>
 <body>
 <div class="topline"><span>Independent fashion & culture</span><span>Issue No. 01 · The New Perspective</span><span>Est. in imagination</span></div>
