@@ -224,5 +224,6 @@ try{
  const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('motion-in');observer.unobserve(entry.target);}});},{threshold:.12,rootMargin:'0px 0px -28px 0px'});
  items.forEach(el=>{el.style.setProperty('--motion-delay',(Array.prototype.indexOf.call(el.parentElement?.children||[],el)%4*70)+'ms');el.classList.add('motion-reveal');observer.observe(el);});
 }catch(e){document.documentElement.classList.remove('motion-enabled');document.querySelectorAll('.motion-reveal').forEach(el=>el.classList.add('motion-in'));}})();
-</script></body>
+</script><script id="preview-header-link-settings">(function(){try{const all=JSON.parse(localStorage.getItem('nira-pixel-header-links')||'{}'),cfg=all.home||{};const nav=[...document.querySelectorAll('.nav a')];const targets={'logo-pixel':document.querySelector('.masthead .brand-logo'),'logo-nira':document.querySelector('.masthead .wordmark')};nav.forEach((a,i)=>targets['nav-'+i]=a);Object.entries(cfg).forEach(([id,v])=>{const a=targets[id];if(!a||!v)return;if(v.url)a.setAttribute('href',v.url);if(v.newTab){a.target='_blank';a.rel='noopener noreferrer'}else{a.removeAttribute('target');a.removeAttribute('rel')}if(v.enabled===false){a.dataset.linkDisabled='1';a.style.cursor='default';a.setAttribute('aria-disabled','true');a.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation()},true)}else{delete a.dataset.linkDisabled;a.removeAttribute('aria-disabled')}})}catch(e){}})();</script>
+</body>
 </html>
