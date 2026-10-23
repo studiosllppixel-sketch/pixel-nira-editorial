@@ -927,4 +927,44 @@ $('preview-page').addEventListener('change',()=>{if(workView==='canvas')loadCanv
 </script><style id="admin-auth-gate">body{visibility:hidden}</style><script>
 (async()=>{try{const r=await fetch('/api/admin/me',{credentials:'same-origin',cache:'no-store'});if(!r.ok){location.replace('/admin/');return;}document.body.style.visibility='visible';}catch(e){location.replace('/admin/');}})();
 </script>
+<style id="uiux-stage-one">
+/* UI/UX stage 1: editor clarity, touch targets and narrow-screen usability */
+:focus-visible{outline:2px solid #9b2366;outline-offset:3px}
+button,.navitem,select,input{touch-action:manipulation}
+.btn{min-height:38px}
+.btn:focus-visible,.navitem:focus-visible,.devicebar button:focus-visible{outline:2px solid #c21874;outline-offset:2px}
+@media(max-width:850px){
+ .top{height:auto;min-height:60px;padding:10px 14px;flex-wrap:wrap}
+ .top-actions{flex-wrap:wrap}
+ .app{grid-template-columns:minmax(0,1fr);min-height:0}
+ .sidebar{border-right:0;border-bottom:1px solid var(--line);padding:12px}
+ .brand-choice{margin-bottom:12px}
+ .workspace{padding:14px}
+ .canvas-wrap{min-height:400px;padding:12px}
+ .workhead{align-items:flex-start}
+ .workhead h1{font-size:24px}
+}
+@media(max-width:700px){
+ .top{gap:10px}
+ .brand{font-size:20px}
+ .status{display:none}
+ .top-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .top-actions .btn{min-height:42px;padding:10px 8px}
+ .sidebar{padding:10px}
+ .side-title{margin:8px 4px}
+ .brand-choice button{min-height:42px}
+ .navitem{min-height:42px;padding:10px}
+ .workspace{padding:10px}
+ .workhead{display:grid;grid-template-columns:1fr;gap:12px}
+ .devicebar{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ .devicebar button{min-height:40px}
+ .canvas-wrap{min-height:340px;padding:8px;border-radius:9px}
+ .canvas{max-width:100%}
+ .canvas.mobile{width:min(320px,100%)}
+ .canvas.tablet{width:min(500px,100%)}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
 </body></html>
