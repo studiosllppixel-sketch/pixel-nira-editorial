@@ -797,33 +797,40 @@ document.querySelectorAll('[data-add-canvas-target]').forEach(button=>button.add
  document.querySelectorAll('[data-add-canvas-target]').forEach(b=>{b.disabled=true});
  button.textContent='Adding…';
  try{
-  const response=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load saved pages');
-  const pages=data.pages||data;const page=pages.find(p=>p.page_key===key||p.pageKey===key)||{};
+  const response=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load saved pages');
+  const pages=data.pages||data;const page=pages.find(p=>p.page_key===key||p.pageKey===key);
+  if(!page)throw new Error('Could not find the destination page '+pageLabel);
   const content=page.draft_content||page.draftContent||page.published_content||page.publishedContent||{};
-  // Save the current canvas into the destination page's own canvas collection as well as its website section.
-  // Preserve existing destination canvases; reuse an exact match to avoid duplicate entries on repeated clicks.
   saveActivePage();
   const currentCanvas={html:$('canvas').innerHTML,bg:$('canvas').style.background||getComputedStyle($('canvas')).backgroundColor,title:$('page-title').textContent||'Canvas'};
   const destinationCanvases=Array.isArray(content.canvasPages)?content.canvasPages.slice():[];
   let destinationIndex=destinationCanvases.findIndex(item=>item&&item.title===currentCanvas.title&&item.html===currentCanvas.html);
   if(destinationIndex<0){destinationCanvases.push(currentCanvas);destinationIndex=destinationCanvases.length-1;}
-  content.canvasPages=destinationCanvases;
-  content.activePage=destinationIndex;
-  content.canvasHtml=currentCanvas.html;
-  content.canvasBackground=currentCanvas.bg;
-  content.canvasSection=exportCanvasSection();
+  const section=exportCanvasSection();
+  content.canvasPages=destinationCanvases;content.activePage=destinationIndex;
+  content.canvasHtml=currentCanvas.html;content.canvasBackground=currentCanvas.bg;content.canvasSection=section;
   const saved=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey:key,title:page.title||pageLabel,content,action:'draft'})});
   const result=await saved.json().catch(()=>({}));if(!saved.ok)throw new Error(result.error||'Could not save canvas section');
-  // Open the destination page immediately so the user can verify the saved draft section.
+  // Switch to the exact destination and wait for its iframe to load before inserting the saved section.
   const destinationPath=key==='home'?'/':key==='pixel-studios'?'/pixel-studios/':'/nira-editorial/';
-  $('preview-page').value=destinationPath;
-  if($('website-edit-page'))$('website-edit-page').value=destinationPath;
+  $('preview-page').value=destinationPath;if($('website-edit-page'))$('website-edit-page').value=destinationPath;
   websiteEdits=[];galleryThemes=[];galleryAddTargetTheme=null;
   await loadWebsiteDraft();
+  const frame=$('website-preview-frame');
+  const frameLoaded=new Promise(resolve=>frame.addEventListener('load',resolve,{once:true}));
   showWebsitePreview();
-  websiteStatus('Canvas section saved to '+pageLabel+' draft and loaded in its preview. Publish changes separately when ready.');
-  toast('Canvas saved to '+pageLabel+' draft; preview opened.');
- }catch(error){console.error(error);websiteStatus('Could not add canvas to '+pageLabel+': '+error.message);toast('Could not add canvas: '+error.message);}
+  await frameLoaded;
+  // Re-read persisted content, so the preview uses the saved destination page's draft rather than stale in-memory data.
+  const verify=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});
+  const verifyData=await verify.json();if(!verify.ok)throw new Error(verifyData.error||'Canvas saved, but the destination preview could not refresh');
+  const verifiedPage=(verifyData.pages||verifyData).find(p=>p.page_key===key||p.pageKey===key);
+  const verifiedContent=verifiedPage?.draft_content||verifiedPage?.draftContent||verifiedPage?.published_content||verifiedPage?.publishedContent||{};
+  if(!verifiedContent.canvasSection)throw new Error('The canvas was saved, but no canvas section was returned for '+pageLabel+'.');
+  placeCanvasSectionInPreview(verifiedContent.canvasSection,key);
+  websiteStatus('Canvas saved to '+pageLabel+' draft and displayed in its preview. Publish separately when ready.');
+  toast('Canvas added to '+pageLabel+' and shown in preview.');
+ }catch(error){console.error(error);websiteStatus('Could not add canvas to '+pageLabel+': '+error.message);toast('Canvas/preview issue: '+error.message);}
  finally{document.querySelectorAll('[data-add-canvas-target]').forEach(b=>b.disabled=false);button.textContent=originalText;}
 }));
 async function moveCanvasSection(direction){
