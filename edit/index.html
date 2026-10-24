@@ -859,7 +859,8 @@ function placeAllCanvasSectionsInPreview(content,pageKey){
  const doc=$('website-preview-frame').contentDocument;if(!doc)return;
  doc.querySelectorAll('[data-editor-canvas-section]').forEach(el=>el.remove());
  const sections=Array.isArray(content?.canvasSections)?content.canvasSections:(content?.canvasSection?[content.canvasSection]:[]);
- sections.forEach((section,i)=>placeCanvasSectionInPreview({...section,id:section.id||section.title||('canvas-'+(i+1))},pageKey));
+ const hasCanvasContent=section=>{if(!section||typeof section.html!=='string'||!section.html.trim())return false;const parsed=new DOMParser().parseFromString(section.html,'text/html');const root=parsed.body;return !!(root.querySelector('img,svg,video,canvas,iframe,[style*="background-image"]')||root.textContent.trim());};
+ sections.filter(hasCanvasContent).forEach((section,i)=>placeCanvasSectionInPreview({...section,id:section.id||section.title||('canvas-'+(i+1))},pageKey));
  refreshCanvasInsertTargets();
 }
 document.querySelectorAll('[data-add-canvas-target]').forEach(button=>button.addEventListener('click',async()=>{
