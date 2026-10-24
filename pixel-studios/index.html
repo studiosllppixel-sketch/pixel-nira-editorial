@@ -45,7 +45,7 @@ try{
 
 <script id="published-website-edits">
 (async()=>{try{const r=await fetch('/api/site-content?pageKey=pixel-studios',{cache:'no-store'});if(!r.ok)return;const data=await r.json();
- const canvasSections=Array.isArray(data?.content?.canvasSections)?data.content.canvasSections:(data?.content?.canvasSection?[data.content.canvasSection]:[]);
+ const canvasSections=(Array.isArray(data?.content?.canvasSections)?data.content.canvasSections:(data?.content?.canvasSection?[data.content.canvasSection]:[])).filter(section=>{if(!section||typeof section.html!=='string'||!section.html.trim())return false;const parsed=new DOMParser().parseFromString(section.html,'text/html');return !!(parsed.body.querySelector('img,svg,video,canvas,iframe,[style*="background-image"]')||parsed.body.textContent.trim());});
  const hero=document.querySelector('.hero, .hero-section, main section:first-of-type');
  canvasSections.forEach((canvasSection,index)=>{
   if(!canvasSection||typeof canvasSection.html!=='string')return;
