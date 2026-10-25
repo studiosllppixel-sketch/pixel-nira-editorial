@@ -157,11 +157,24 @@ async function saveCanvasDraft(){
  const path=$('preview-page')?.value|| (brand==='nira'?'/nira-editorial/':'/pixel-studios/');
  const pageKey=pageKeyForPath(path);
  const draft=snapshot();
+ // Give each Canvas Studio page a stable ID so its exported website section can be updated later.
+ canvasPages=canvasPages.map((item,index)=>({...item,id:String(item.id||'canvas-'+pageKey+'-'+(index+1))}));
+ draft.canvasPages=canvasPages;draft.activePage=activePage;
  localStorage.setItem('nira-pixel-editor-draft-'+pageKey,JSON.stringify(draft));
  const current=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});
  const data=await current.json();if(!current.ok)throw new Error(data.error||'Could not load saved page');
  const page=(data.pages||data).find(p=>p.page_key===pageKey||p.pageKey===pageKey)||{};
  const content=page.draft_content||page.draftContent||page.published_content||page.publishedContent||{};
+ // Public brand pages render canvasSections, so keep the linked section HTML in sync with Canvas Studio.
+ const currentCanvas=canvasPages[activePage];
+ const sections=Array.isArray(content.canvasSections)?content.canvasSections.slice():(content.canvasSection?[content.canvasSection]:[]);
+ let sectionIndex=sections.findIndex(section=>section&&(section.canvasId===currentCanvas?.id||section.title===currentCanvas?.title));
+ if(sectionIndex<0&&sections.length===1)sectionIndex=0;
+ if(sectionIndex>=0&&currentCanvas){
+  const previous=sections[sectionIndex],exported=exportCanvasSection();
+  sections[sectionIndex]={...previous,...exported,id:previous.id||'canvas-section-'+currentCanvas.id,canvasId:currentCanvas.id,position:previous.position||exported.position,insertAfter:previous.insertAfter||exported.insertAfter};
+  content.canvasSections=sections;content.canvasSection=sections[sectionIndex];
+ }
  Object.assign(content,{brand,pageTitle:$('page-title').textContent,canvasHtml:$('canvas').innerHTML,canvasBackground:$('canvas').style.background||getComputedStyle($('canvas')).backgroundColor,heroHeadline:$('headline')?.innerHTML||'',heroCopy:$('subcopy')?.innerText||'',heroImage:$('photo')?.src||'',heroKicker:$('kicker')?.textContent||'',caption:$('caption')?.textContent||'',canvasPages,activePage,updatedAt:new Date().toISOString()});
  const response=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey,title:content.pageTitle||page.title||pageKey,content,action:'draft'})});
  const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Server draft save failed');
@@ -938,12 +951,14 @@ document.querySelectorAll('[data-add-canvas-target]').forEach(button=>button.add
   if(!page)throw new Error('Could not find the destination page '+pageLabel);
   const content=page.draft_content||page.draftContent||page.published_content||page.publishedContent||{};
   saveActivePage();
-  const currentCanvas={html:$('canvas').innerHTML,bg:$('canvas').style.background||getComputedStyle($('canvas')).backgroundColor,title:$('page-title').textContent||'Canvas'};
-  const destinationCanvases=Array.isArray(content.canvasPages)?content.canvasPages.slice():[];
+  canvasPages=canvasPages.map((item,index)=>({...item,id:String(item.id||'canvas-'+key+'-'+(index+1))}));
+  const currentCanvas={id:canvasPages[activePage]?.id||'canvas-'+key+'-'+(activePage+1),html:$('canvas').innerHTML,bg:$('canvas').style.background||getComputedStyle($('canvas')).backgroundColor,title:$('page-title').textContent||'Canvas'};
+  const destinationCanvases=(Array.isArray(content.canvasPages)?content.canvasPages.slice():[]).map((item,index)=>({...item,id:String(item.id||'canvas-'+key+'-'+(index+1))}));
   let destinationIndex=destinationCanvases.findIndex(item=>item&&item.title===currentCanvas.title&&item.html===currentCanvas.html);
   if(destinationIndex<0){destinationCanvases.push(currentCanvas);destinationIndex=destinationCanvases.length-1;}
   const section=exportCanvasSection();
   section.id='canvas-'+Date.now();
+  section.canvasId=currentCanvas.id;
   section.position=$('canvas-section-position').value||'after-hero';
   section.insertAfter=$('canvas-insert-after')?.value||'hero';
   content.canvasPages=destinationCanvases;content.activePage=destinationIndex;
