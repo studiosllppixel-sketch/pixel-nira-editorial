@@ -65,21 +65,6 @@ body.website-mode .sidebar > .brand-choice{display:none!important}
 <script>
 const $=id=>document.getElementById(id);let selected='headline',brand='nira',device='desktop',objectUrl=null,canvasPages=[],activePage=0,dragState=null,websitePage='home';
 const els={headline:$('headline'),subcopy:$('subcopy'),photo:$('photo'),caption:$('caption'),kicker:$('kicker')};
-/* Preview-only crop for saved artwork that sits low inside an oversized canvas.
-   Keeps saved HTML untouched; positions/sizes are converted to pixels only in the editor view. */
-function fitSavedArtworkInCanvas(){
- const stage=$('canvas'), saved=canvasPages[activePage];
- if(!stage||!saved||!saved.html||saved.html===starterCanvasHtml)return;
- const rect=stage.getBoundingClientRect();if(!rect.width||!rect.height)return;
- const items=[...stage.children].filter(el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return cs.display!=='none'&&cs.visibility!=='hidden'&&r.width>1&&r.height>1;});
- if(!items.length)return;
- const top=Math.min(...items.map(el=>el.getBoundingClientRect().top-rect.top));
- const bottom=Math.max(...items.map(el=>el.getBoundingClientRect().bottom-rect.top));
- if(top<rect.height*.18||top>rect.height*.78||bottom-top<rect.height*.15)return;
- const cropTop=Math.max(0,top),cropHeight=Math.max(80,bottom-cropTop);
- items.forEach(el=>{const r=el.getBoundingClientRect();el.style.position='absolute';el.style.left=(r.left-rect.left)+'px';el.style.top=(r.top-rect.top-cropTop)+'px';el.style.width=r.width+'px';el.style.height=r.height+'px';});
- stage.style.aspectRatio=(rect.width/cropHeight).toFixed(4);stage.style.height=cropHeight+'px';stage.style.maxHeight='none';stage.dataset.previewCropped='true';
-}
 function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2400)}
 function selectEl(id){selected=id;Object.values(els).forEach(e=>e.classList.remove('selected'));if(els[id])els[id].classList.add('selected');$('selection-note').textContent='Selected: '+(id? id.charAt(0).toUpperCase()+id.slice(1):'Canvas');$('text-content').value=(id==='headline'||id==='subcopy')?els[id].innerText:'';$('text-content').disabled=!(id==='headline'||id==='subcopy');$('font-size').value=parseInt(getComputedStyle(els[id]||els.headline).fontSize)||24;$('text-color').value=rgbHex(getComputedStyle(els[id]||els.headline).color);const activePhoto=id==='photo'&&els.photo;$('image-position-x').disabled=!activePhoto;$('image-position-y').disabled=!activePhoto;if(activePhoto){const pos=getComputedStyle(els.photo).objectPosition;$('image-position-x').value=canvasPositionPercent(pos,0);$('image-position-y').value=canvasPositionPercent(pos,1)}}
 function canvasPositionPercent(position,axis){const token=String(position||'50% 50%').trim().split(/\s+/)[axis]||'50%';if(token==='left'||token==='top')return 0;if(token==='right'||token==='bottom')return 100;if(token==='center')return 50;const value=parseFloat(token);return Number.isFinite(value)?Math.max(0,Math.min(100,value)):50}
@@ -193,7 +178,7 @@ async function loadCanvasDraft(){
   activePage=Math.max(0,Math.min(Number(content.activePage)||0,canvasPages.length-1));
   const saved=canvasPages[activePage];
   $('canvas').innerHTML=saved.html;$('canvas').style.background=saved.bg;$('canvas').style.height='';$('canvas').style.aspectRatio='';delete $('canvas').dataset.previewCropped;
-  $('page-title').textContent=saved.title;rebindCanvas();requestAnimationFrame(()=>fitSavedArtworkInCanvas());
+  $('page-title').textContent=saved.title;rebindCanvas();
   if(document.querySelector('[data-panel="canvases"]')?.classList.contains('active'))renderCanvasList();
   toast('Saved canvas loaded for '+(pageKey==='home'?'Main homepage':pageKey==='pixel-studios'?'Pixel Studios':'Nira Editorial')+'.');
  }catch(error){if(loadId===canvasLoadRequest){console.warn('Canvas draft load failed',error);toast('Could not load saved canvas. Please check your sign-in and try again.');}}
@@ -837,23 +822,33 @@ function exportCanvasSection(){
  clone.querySelectorAll('[contenteditable="true"]').forEach(el=>el.removeAttribute('contenteditable'));
  clone.removeAttribute('id');
  const originalEls=[...canvas.children],cloneEls=[...clone.children];
+ const bounds=originalEls.map(el=>el.getBoundingClientRect()).filter(r=>r.width>1&&r.height>1);
+ // Crop only the empty top/bottom of the exported viewport. Element geometry remains
+ // in the same pixel coordinate system; only the canvas origin and viewport height change.
+ const topContent=bounds.length?Math.min(...bounds.map(r=>r.top-rect.top)):0;
+ const bottomContent=bounds.length?Math.max(...bounds.map(r=>r.bottom-rect.top)):rect.height;
+ const margin=Math.min(rect.height*.02,Math.max(8,rect.height*.015));
+ const cropTop=Math.max(0,topContent-margin);
+ const cropBottom=Math.min(rect.height,bottomContent+margin);
+ const cropHeight=Math.max(1,cropBottom-cropTop);
  originalEls.forEach((el,i)=>{
   const out=cloneEls[i];if(!out)return;
   const r=el.getBoundingClientRect();
   out.style.position='absolute';
   out.style.left=((r.left-rect.left)/Math.max(1,rect.width)*100)+'%';
-  out.style.top=((r.top-rect.top)/Math.max(1,rect.height)*100)+'%';
+  out.style.top=((r.top-rect.top-cropTop)/cropHeight*100)+'%';
   out.style.width=(r.width/Math.max(1,rect.width)*100)+'%';
-  out.style.height=(r.height/Math.max(1,rect.height)*100)+'%';
+  out.style.height=(r.height/cropHeight*100)+'%';
   out.style.margin='0';out.style.maxWidth='none';out.style.boxSizing='border-box';
   const cs=getComputedStyle(el);
   ['fontFamily','fontSize','fontWeight','fontStyle','lineHeight','letterSpacing','textAlign','textTransform','color','backgroundColor','objectFit','objectPosition','padding','borderRadius','zIndex','opacity','filter'].forEach(k=>{if(cs[k]&&cs[k]!=='auto')out.style[k]=cs[k]});
   if(el.matches('img')){out.style.objectFit=cs.objectFit;out.style.objectPosition=cs.objectPosition}
  });
  const bg=canvas.style.background||getComputedStyle(canvas).backgroundColor||'#fbf6f8';
- const wrapper=document.createElement('div');wrapper.className='published-canvas-section';wrapper.style.cssText='position:relative;width:100%;aspect-ratio:'+(device==='mobile'?'9/16':device==='tablet'?'3/4':'16/10')+';overflow:hidden;background:'+bg+';isolation:isolate;';
+ const ratio=(rect.width/Math.max(1,cropHeight)).toFixed(4);
+ const wrapper=document.createElement('div');wrapper.className='published-canvas-section';wrapper.style.cssText='position:relative;width:100%;aspect-ratio:'+ratio+';overflow:hidden;background:'+bg+';isolation:isolate;';
  wrapper.innerHTML=clone.innerHTML;
- return {title:canvasPages[activePage]?.title||'Canvas design',html:wrapper.outerHTML,background:bg,position:$('canvas-section-position').value||'after-hero',insertAfter:$('canvas-insert-after')?.value||'hero',aspectRatio:device==='mobile'?'9/16':device==='tablet'?'3/4':'16/10'};
+ return {title:canvasPages[activePage]?.title||'Canvas design',html:wrapper.outerHTML,background:bg,position:$('canvas-section-position').value||'after-hero',insertAfter:$('canvas-insert-after')?.value||'hero',aspectRatio:ratio};
 }
 function namespaceCanvasSectionIds(root,pageKey){
  const prefix='published-canvas-'+String(pageKey||'home').replace(/[^a-z0-9_-]/gi,'-')+'-';
