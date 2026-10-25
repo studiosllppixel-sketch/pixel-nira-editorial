@@ -65,6 +65,21 @@ body.website-mode .sidebar > .brand-choice{display:none!important}
 <script>
 const $=id=>document.getElementById(id);let selected='headline',brand='nira',device='desktop',objectUrl=null,canvasPages=[],activePage=0,dragState=null,websitePage='home';
 const els={headline:$('headline'),subcopy:$('subcopy'),photo:$('photo'),caption:$('caption'),kicker:$('kicker')};
+/* Preview-only crop for saved artwork that sits low inside an oversized canvas.
+   Keeps saved HTML untouched; positions/sizes are converted to pixels only in the editor view. */
+function fitSavedArtworkInCanvas(){
+ const stage=$('canvas'), saved=canvasPages[activePage];
+ if(!stage||!saved||!saved.html||saved.html===starterCanvasHtml)return;
+ const rect=stage.getBoundingClientRect();if(!rect.width||!rect.height)return;
+ const items=[...stage.children].filter(el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return cs.display!=='none'&&cs.visibility!=='hidden'&&r.width>1&&r.height>1;});
+ if(!items.length)return;
+ const top=Math.min(...items.map(el=>el.getBoundingClientRect().top-rect.top));
+ const bottom=Math.max(...items.map(el=>el.getBoundingClientRect().bottom-rect.top));
+ if(top<rect.height*.18||top>rect.height*.78||bottom-top<rect.height*.15)return;
+ const cropTop=Math.max(0,top),cropHeight=Math.max(80,bottom-cropTop);
+ items.forEach(el=>{const r=el.getBoundingClientRect();el.style.position='absolute';el.style.left=(r.left-rect.left)+'px';el.style.top=(r.top-rect.top-cropTop)+'px';el.style.width=r.width+'px';el.style.height=r.height+'px';});
+ stage.style.aspectRatio=(rect.width/cropHeight).toFixed(4);stage.style.height=cropHeight+'px';stage.style.maxHeight='none';stage.dataset.previewCropped='true';
+}
 function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2400)}
 function selectEl(id){selected=id;Object.values(els).forEach(e=>e.classList.remove('selected'));if(els[id])els[id].classList.add('selected');$('selection-note').textContent='Selected: '+(id? id.charAt(0).toUpperCase()+id.slice(1):'Canvas');$('text-content').value=(id==='headline'||id==='subcopy')?els[id].innerText:'';$('text-content').disabled=!(id==='headline'||id==='subcopy');$('font-size').value=parseInt(getComputedStyle(els[id]||els.headline).fontSize)||24;$('text-color').value=rgbHex(getComputedStyle(els[id]||els.headline).color);const activePhoto=id==='photo'&&els.photo;$('image-position-x').disabled=!activePhoto;$('image-position-y').disabled=!activePhoto;if(activePhoto){const pos=getComputedStyle(els.photo).objectPosition;$('image-position-x').value=canvasPositionPercent(pos,0);$('image-position-y').value=canvasPositionPercent(pos,1)}}
 function canvasPositionPercent(position,axis){const token=String(position||'50% 50%').trim().split(/\s+/)[axis]||'50%';if(token==='left'||token==='top')return 0;if(token==='right'||token==='bottom')return 100;if(token==='center')return 50;const value=parseFloat(token);return Number.isFinite(value)?Math.max(0,Math.min(100,value)):50}
@@ -177,8 +192,8 @@ async function loadCanvasDraft(){
   }
   activePage=Math.max(0,Math.min(Number(content.activePage)||0,canvasPages.length-1));
   const saved=canvasPages[activePage];
-  $('canvas').innerHTML=saved.html;$('canvas').style.background=saved.bg;
-  $('page-title').textContent=saved.title;rebindCanvas();
+  $('canvas').innerHTML=saved.html;$('canvas').style.background=saved.bg;$('canvas').style.height='';$('canvas').style.aspectRatio='';delete $('canvas').dataset.previewCropped;
+  $('page-title').textContent=saved.title;rebindCanvas();requestAnimationFrame(()=>fitSavedArtworkInCanvas());
   if(document.querySelector('[data-panel="canvases"]')?.classList.contains('active'))renderCanvasList();
   toast('Saved canvas loaded for '+(pageKey==='home'?'Main homepage':pageKey==='pixel-studios'?'Pixel Studios':'Nira Editorial')+'.');
  }catch(error){if(loadId===canvasLoadRequest){console.warn('Canvas draft load failed',error);toast('Could not load saved canvas. Please check your sign-in and try again.');}}
