@@ -776,32 +776,31 @@ function showCanvasEditor(){
 }
 function loadWebsiteSection(){
  const frame=$('website-preview-frame'),page=$('preview-page').value,section=$('preview-section').value;
- frame.onload=()=>{
+ // Bind the load handler before changing src. Always fetch and render the saved
+ // destination draft only after the new page document is ready.
+ frame.onload=async()=>{
   try{
    const doc=frame.contentDocument;
-   if(doc){
-    doc.querySelectorAll('[data-editor-old-outline]').forEach(restoreWebsiteHighlight);
-    // Preview the real selected website page at its natural responsive width.
-    // Only saved websiteEdits are applied here; unsaved canvas mockup content must not
-    // overwrite the page or make its preview differ from the published website.
-    websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));
-    attachWebsiteSelection();
-    // Load the private draft canvas section into the editor preview without publishing it.
-    fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'}).then(r=>r.json()).then(data=>{
-     const key=pageKeyForPath(page);
-     const record=(data.pages||data).find?.(p=>p.page_key===key||p.pageKey===key);
-     const content=record?.draft_content||record?.draftContent||record?.published_content||record?.publishedContent||{};
-     if(content.canvasSections?.length||content.canvasSection){placeAllCanvasSectionsInPreview(content,key);websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));}
-     if(isGalleryPageKey(key))renderGalleryThemesInDocument(doc,galleryThemes);
-    }).catch(()=>{}).finally(()=>{
-     // Keep built-in placeholder/stock photos hidden until the saved page draft is applied.
-     try{doc.documentElement.classList.remove('published-content-loading');}catch(e){}
-    });
-   }
+   if(!doc)return;
+   doc.querySelectorAll('[data-editor-old-outline]').forEach(restoreWebsiteHighlight);
+   websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));
+   attachWebsiteSelection();
+   const key=pageKeyForPath(page);
+   const response=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'});
+   const data=await response.json();
+   if(!response.ok)throw new Error(data.error||'Could not load destination page draft');
+   const record=(data.pages||data).find?.(p=>p.page_key===key||p.pageKey===key);
+   const content=record?.draft_content||record?.draftContent||record?.published_content||record?.publishedContent||{};
+   // Always clear stale editor-injected canvas nodes, including when the draft
+   // contains no canvas sections, so an old blank placeholder cannot survive.
+   placeAllCanvasSectionsInPreview(content,key);
+   websiteEdits.forEach(edit=>applyEditToDocument(doc,edit));
+   if(isGalleryPageKey(key))renderGalleryThemesInDocument(doc,galleryThemes);
    const targets={header:doc.querySelector('header'),hero:doc.querySelector('.hero, .hero-section, main section:first-of-type'),stories:doc.querySelector('#stories, .stories, main section:nth-of-type(2), main'),footer:doc.querySelector('footer')};
    if(section!=='whole'){const target=targets[section];if(target){target.scrollIntoView({block:'start'});target.style.outline='2px solid #a34782';target.style.outlineOffset='-2px';}}
    else frame.contentWindow.scrollTo(0,0);
-  }catch(e){console.warn('Could not apply website draft to preview',e);}
+   doc.documentElement.classList.remove('published-content-loading');
+  }catch(e){console.warn('Could not apply website draft to preview',e);websiteStatus('Preview could not render saved canvas: '+e.message);}
  };
  frame.src=page+(page.includes('?')?'&':'?')+'editorPreview=1&section='+encodeURIComponent(section)+'&t='+Date.now();
 }
