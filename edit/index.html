@@ -963,15 +963,22 @@ document.querySelectorAll('[data-add-canvas-target]').forEach(button=>button.add
 }));
 async function moveCanvasSection(direction){
  try{
-  const selectedPath=$('preview-page')?.value||'/',key=({'/':'home','/pixel-studios/':'pixel-studios','/nira-editorial/':'nira-editorial'})[selectedPath]||'home';
+  const selectedPath=$('preview-page')?.value||'/',key=pageKeyForPath(selectedPath);
   const response=await fetch('/api/admin/pages',{credentials:'same-origin',cache:'no-store'}),data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load page');
   const page=(data.pages||data).find(p=>p.page_key===key||p.pageKey===key)||{},content=page.draft_content||page.draftContent||page.published_content||page.publishedContent||{};
-  if(!content.canvasSection){websiteStatus('Add the canvas as a section first.');return}
-  content.canvasSection.position=direction;
+  const sections=Array.isArray(content.canvasSections)?content.canvasSections.slice():(content.canvasSection?[content.canvasSection]:[]);
+  if(!sections.length){websiteStatus('Add the canvas as a section first.');return}
+  const chosen=$('canvas-insert-after')?.value||'';
+  let index=sections.findIndex((item,i)=>(item.id||item.canvasId||item.title||('canvas-'+(i+1)))===chosen);
+  if(index<0)index=sections.length-1;
+  // Update the selected section in the canonical array, not only the legacy singular alias.
+  sections[index]={...sections[index],position:direction};
+  content.canvasSections=sections;
+  content.canvasSection=sections[index];
   const saved=await fetch('/api/admin/pages',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({pageKey:key,title:page.title||key,content,action:'draft'})});
   const result=await saved.json().catch(()=>({}));if(!saved.ok)throw new Error(result.error||'Could not reorder canvas');
-  $('canvas-section-position').value=direction;placeCanvasSectionInPreview(content.canvasSection,key);
-  websiteStatus('Canvas section moved '+(direction==='before'?'before':'after')+' the hero. Save as draft is complete.');
+  $('canvas-section-position').value=direction;placeAllCanvasSectionsInPreview(content,key);
+  websiteStatus('Selected canvas section moved '+(direction==='before'?'before':'after')+' the hero on '+(key==='home'?'Main home':key==='pixel-studios'?'Pixel Studios':'Nira Editorial')+'. Draft saved.');
  }catch(error){websiteStatus('Could not move section: '+error.message)}
 }
 $('canvas-section-up').addEventListener('click',()=>moveCanvasSection('before'));
