@@ -22,8 +22,12 @@ try{
  const canvasSections=(Array.isArray(data?.content?.canvasSections)?data.content.canvasSections:(data?.content?.canvasSection?[data.content.canvasSection]:[])).filter(section=>{if(!section||typeof section.html!=='string'||!section.html.trim())return false;const parsed=new DOMParser().parseFromString(section.html,'text/html');return !!(parsed.body.querySelector('img,svg,video,canvas,iframe,[style*="background-image"]')||parsed.body.textContent.trim());});
  const main=document.querySelector('main')||document.body;
  const hero=document.querySelector('.hero, .hero-section, main section:first-of-type');
+ const seenCanvasHtml=new Set();
  canvasSections.forEach((canvasSection,index)=>{
   if(!canvasSection||typeof canvasSection.html!=='string')return;
+  const canvasSignature=canvasSection.html.trim();
+  if(seenCanvasHtml.has(canvasSignature))return;
+  seenCanvasHtml.add(canvasSignature);
   try{
    const parsed=new DOMParser().parseFromString(canvasSection.html,'text/html');
    const section=parsed.body.firstElementChild;
