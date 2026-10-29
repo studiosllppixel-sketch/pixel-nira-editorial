@@ -1,4 +1,4 @@
-import { get } from '@vercel/blob';
+import { readR2Object } from './r2.js';
 import { requireAdmin, sql } from '../_auth.js';
 
 export default async function handler(req, res) {
@@ -19,14 +19,15 @@ export default async function handler(req, res) {
     const admin = await requireAdmin(req).catch(() => null);
     if (!admin && !rows[0].is_published) return res.status(401).json({ error: 'Sign in required.' });
     res.setHeader('Cache-Control', rows[0].is_published ? 'public, max-age=300' : 'private, no-store');
-    const result = await get(pathname, { access: 'private' });
-    if (!result || result.statusCode !== 200) return res.status(404).json({ error: 'Media not found.' });
-    res.setHeader('Content-Type', result.blob.contentType || 'application/octet-stream');
+    const result = await readR2Object(pathname);
+    if (!result?.Body) return res.status(404).json({ error: 'Media not found.' });
+    res.setHeader('Content-Type', result.ContentType || rows[0].content_type || 'application/octet-stream');
     res.setHeader('Content-Disposition', 'inline');
-    const bytes = Buffer.from(await new Response(result.stream).arrayBuffer());
-    res.setHeader('Content-Length', String(bytes.length));
+    if (Number.isFinite(result.ContentLength)) res.setHeader('Content-Length', String(result.ContentLength));
+    const bytes = Buffer.from(await result.Body.transformToByteArray());
     return res.status(200).send(bytes);
   } catch (error) {
+    if (error?.name === 'NoSuchKey' || error?.$metadata?.httpStatusCode === 404) return res.status(404).json({ error: 'Media not found.' });
     console.error('Media read failed:', error?.message || 'unknown error');
     return res.status(500).json({ error: 'Could not load media.' });
   }
