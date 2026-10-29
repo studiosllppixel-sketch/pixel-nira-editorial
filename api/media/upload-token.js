@@ -1,4 +1,4 @@
-import { issueSignedToken, presignUrl } from '@vercel/blob';
+import { presignR2Upload } from './r2.js';
 import { requireAdmin, sql } from '../_auth.js';
 
 const allowedBrands = new Set(['pixel-studios', 'nira-editorial', 'shared']);
@@ -29,24 +29,8 @@ export default async function handler(req, res) {
 
     if (action === 'sign') {
       const pathname = `media/${Date.now()}-${filename}`;
-      const validUntil = Date.now() + 10 * 60 * 1000;
-      const token = await issueSignedToken({
-        pathname,
-        operations: ['put'],
-        allowedContentTypes: [contentType],
-        maximumSizeInBytes: maxSize,
-        validUntil
-      });
-      const signed = await presignUrl(token, {
-        pathname,
-        operation: 'put',
-        access: 'private',
-        allowedContentTypes: [contentType],
-        maximumSizeInBytes: maxSize,
-        addRandomSuffix: false,
-        validUntil
-      });
-      return res.status(200).json({ pathname, presignedUrl: signed.presignedUrl });
+      const presignedUrl = await presignR2Upload({ pathname, contentType, size });
+      return res.status(200).json({ pathname, presignedUrl });
     }
 
     if (action === 'register') {
@@ -66,6 +50,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid upload action.' });
   } catch (error) {
     console.error('Media upload failed:', error?.message || 'unknown error');
-    return res.status(400).json({ error: error?.message || 'Could not authorize this upload.' });
+    return res.status(500).json({ error: 'Could not authorize this upload. Check the R2 configuration.' });
   }
 }
