@@ -33,9 +33,9 @@ The Cloudflare Worker binding added in the dashboard is not used by these API ha
 1. Set the four environment variables in Preview only.
 2. Confirm the Preview deployment is using this branch.
 3. Test upload, registration, display, brand filtering, and deletion with a disposable image.
-4. Confirm existing published Vercel Blob images still display. This branch reads from R2, so existing Vercel Blob objects will not be found until a separate migration/backfill or a temporary dual-read fallback is implemented.
+4. Confirm existing published Vercel Blob images still display through the temporary legacy-read fallback, then upload a new disposable image and confirm it is stored in R2.
 5. Do not promote or merge this branch into Production until the legacy-image compatibility strategy and all tests are confirmed.
 
 ## Known migration limitation
 
-Existing `media_assets.object_key` values still point to Vercel Blob objects. This code assumes objects with those keys exist in R2. Therefore, the migration is not production-ready until legacy media is copied to R2 (preserving object keys) or the read endpoint supports both R2 and Vercel Blob during a transition period.
+Existing `media_assets.object_key` values may still point to Vercel Blob objects. The read endpoint and delete action now include a temporary fallback for legacy Blob objects. This preserves old images during testing, but the Blob fallback should only be removed after a verified copy/backfill to R2 and a full media audit.
