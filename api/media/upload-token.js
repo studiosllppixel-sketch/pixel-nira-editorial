@@ -1,4 +1,4 @@
-import { presignR2Upload } from './r2.js';
+import { presignR2Upload, inspectR2Object, deleteR2Object } from './r2.js';
 import { requireAdmin, sql } from '../_auth.js';
 
 const allowedBrands = new Set(['pixel-studios', 'nira-editorial', 'shared']);
@@ -37,6 +37,20 @@ export default async function handler(req, res) {
       const pathname = String(body.pathname || '');
       if (!pathname.startsWith('media/') || pathname.length > 500 || pathname.includes('..')) {
         return res.status(400).json({ error: 'Invalid media path.' });
+      }
+      let stored;
+      try {
+        stored = await inspectR2Object(pathname);
+      } catch {
+        return res.status(400).json({ error: 'Upload was not found in R2. Please upload the image again.' });
+      }
+      const storedSize = Number(stored.ContentLength || 0);
+      const storedType = String(stored.ContentType || '');
+      if (storedSize < 1 || storedSize > maxSize || storedSize !== size || !allowedTypes.has(storedType) || storedType !== contentType) {
+        if (storedSize > maxSize || !allowedTypes.has(storedType) || storedType !== contentType) {
+          await deleteR2Object(pathname).catch(() => {});
+        }
+        return res.status(400).json({ error: 'Uploaded file size or type did not match the selected image.' });
       }
       const db = sql();
       await db`INSERT INTO public.media_assets (brand, object_key, original_filename, content_type, size_bytes, created_by)
