@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 function requiredEnv(name) {
@@ -33,6 +33,11 @@ export async function presignR2Upload({ pathname, contentType, size }) {
     ContentLength: size
   });
   return getSignedUrl(client, command, { expiresIn: 600 });
+}
+
+export async function inspectR2Object(pathname) {
+  const { client, bucket } = r2Config();
+  return client.send(new HeadObjectCommand({ Bucket: bucket, Key: pathname }));
 }
 
 export async function readR2Object(pathname) {
